@@ -1,0 +1,311 @@
+/* ============================
+   RUNX3 코스 목록 전용 route.css
+   (HTML/JS 수정 없이 스타일만 입히기)
+   ============================ */
+
+/* 페이지 전체 카드 래퍼 */
+.card {
+    width: 100%;
+    margin: 12px auto 0;     /* 위쪽 붙이고, 좌우는 container에 맞춤 */
+    padding: 20px 24px;      /* 안쪽 여백 살짝 줄이기 */
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+    box-sizing: border-box;
+    padding-bottom: 80px !important;  /* 확실하게 공간 확보 */
+}
+
+/* 페이지 전체 폭 + 정렬 (대회소식과 맞추기 느낌) */
+.route-page-container {
+    max-width: 1040px;       /* 1100 → 1040, 살짝 좁게 */
+    margin: 32px auto 56px;  /* 위/아래 여백도 조금 줄이기 */
+}
+
+
+/* 여백 유틸 (부트스트랩 흉내) */
+.mb-3 { margin-bottom: 1rem; }
+.mt-3 { margin-top: 1rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+
+/* flex 유틸 */
+.d-flex { display: flex; }
+.gap-2 { gap: 0.5rem; }
+.flex-wrap { flex-wrap: wrap; }
+.float-end {
+    float: none !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: 100%;
+    margin-top: 24px;
+}
+.me-2 { margin-right: 0.5rem; }
+
+/* 글자 유틸 */
+.fw-semibold { font-weight: 600; }
+
+/* ============================
+   검색 폼
+   ============================ */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* 인풋 */
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #f9fafb;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.form-control:focus {
+    border-color: #06b6d4;
+    background: #ffffff;
+    box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.4);
+}
+
+/* 검색/필터 버튼 영역 */
+form .d-flex {
+    align-items: center;
+}
+
+/* 버튼 공통 */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    font-size: 14px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background: #ffffff;
+    color: #111827;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.18s ease;
+}
+
+/* 기본 회색 버튼 */
+.btn-secondary {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+}
+.btn-secondary:hover {
+    background: #000000;
+    border-color: #000000;
+}
+
+/* 테두리형 회색 */
+.btn-outline-secondary {
+    border-color: #d1d5db;
+    background: #ffffff;
+    color: #111827;
+}
+.btn-outline-secondary:hover,
+.btn-outline-secondary.active {
+    border-color: #111827;
+    background: #111827;
+    color: #ffffff;
+}
+
+/* 테두리형 초록 (난이도) */
+.btn-outline-success {
+    border-color: #22c55e;
+    background: #ffffff;
+    color: #16a34a;
+}
+.btn-outline-success:hover,
+.btn-outline-success.active {
+    border-color: #16a34a;
+    background: #16a34a;
+    color: #ffffff;
+}
+
+/* 정렬 버튼 전용 (선택 상태 표시) */
+.sortBtn.active {
+    border-color: #0ea5e9;
+    background: #0ea5e9;
+    color: #ffffff;
+}
+
+/* ============================
+   코스 카드 그리드
+   ============================ */
+
+.route-wrap {
+    margin-top: 12px;   /* 16~20 정도였던 걸 조금 줄이기 */
+}
+.route-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.route-empty {
+    padding: 40px 4px 20px;
+    text-align: center;
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* 개별 카드 */
+.route-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    background: #ffffff;
+    border-radius: 18px;
+    border: 1px solid #e5e7eb;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    color: #111827;
+}
+
+.route-card:hover {
+    transform: translateY(-4px);
+    border-color: #0ea5e9;
+    box-shadow: 0 18px 40px rgba(14, 165, 233, 0.35);
+}
+
+/* 지도 썸네일 (카카오맵이 여기 들어감) */
+.route-thumb.map-thumb {
+    width: 100%;
+    height: 180px;           /* ★ 이게 없어서 화면에 안 보였을 가능성 큼 */
+    background: #f3f4f6;
+}
+
+/* 카드 본문 */
+.route-meta {
+    padding: 14px 16px 16px;
+}
+
+.route-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #111827;
+}
+
+/* 라벨/값 행 */
+.route-row {
+    display: flex;
+    font-size: 13px;
+    margin-top: 2px;
+}
+
+.route-row .label {
+    width: 40px;
+    color: #6b7280;
+}
+
+.route-row .value {
+    flex: 1;
+    color: #111827;
+}
+
+/* ============================
+   페이지네이션
+   ============================ */
+
+.pagination {
+    list-style: none;
+    display: flex;
+    gap: 6px;
+    padding-left: 0;
+    margin: 20px 0 0;
+}
+
+.page-item {
+    display: inline-block;
+}
+
+.page-item .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    font-size: 13px;
+    color: #4b5563;
+    text-decoration: none;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.15s ease;
+}
+
+.page-item .page-link:hover {
+    border-color: #0ea5e9;
+    color: #0ea5e9;
+}
+
+/* 현재 페이지 (타이핑 오타: actice 를 그대로 사용) */
+.page-item.actice .page-link {
+    border-color: #0ea5e9;
+    background: #0ea5e9;
+    color: #ffffff;
+}
+
+/* ============================
+   반응형
+   ============================ */
+
+@media (max-width: 768px) {
+    .card {
+        margin: 16px 12px 40px;
+        padding: 20px 16px;
+        border-radius: 18px;
+    }
+
+    .route-grid {
+        grid-template-columns: 1fr;
+    }
+
+    form .d-flex {
+        flex-wrap: wrap;
+    }
+}
+
+/* 정렬 버튼 영역: 오른쪽 정렬 */
+.route-sort-bar {
+    justify-content: flex-end;
+    margin-top: 8px;
+}
+
+/* ============================
+   페이지 타이틀 영역
+   ============================ */
+
+.route-page-title {
+    font-size: 32px;     /* 24 → 32 */
+    font-weight: 700;
+    margin: 0;
+    color: #0f172a;
+}
+
+.route-title-bar {
+    margin-bottom: 24px;
+    padding-top: 32px;   /* 타이틀 윗 여백 추가 */
+    padding-bottom: 12px;
+}
+.route-page-sub {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b; /* 중간 회색 */
+}
+
+.route-title-bar {
+    margin-top: 24px;   /* 페이지 상단과의 통일 */
+}

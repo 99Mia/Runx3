@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+
+<div layout:fragment="content">
+
+    <!-- RunWave 공통 컨테이너 -->
+    <main class="container rw-form-page">
+
+        <!-- 상단 타이틀 -->
+        <header class="rw-header">
+            <div class="rw-header__inner">
+                <div class="rw-logo">
+                    <h1 class="rw-title">파일 업로드</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- 본문 카드 -->
+        <section class="rw-card rw-form-card">
+
+            <form action="/boards/upload" method="post" enctype="multipart/form-data">
+
+                <!-- 제목 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">제목</label>
+                    <input type="text" name="title" class="rw-form-control" placeholder="제목을 입력하세요">
+                </div>
+
+                <!-- 내용 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">내용</label>
+                    <textarea name="content" class="rw-form-control rw-form-textarea"
+                              placeholder="내용을 입력하세요" rows="5"></textarea>
+                </div>
+
+                <!-- 작성자 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">작성자</label>
+                    <input type="text" name="author" class="rw-form-control" placeholder="작성자 이름">
+                </div>
+
+                <!-- 파일 업로드 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">파일 선택</label>
+                    <input type="file" name="files" class="rw-form-control" multiple>
+                    <p class="rw-form-help">여러 개의 파일을 선택할 수 있습니다.</p>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="rw-form-actions">
+                    <button type="submit" class="rw-btn rw-btn--primary">업로드</button>
+                    <a th:href="@{/boards/list}" class="rw-btn rw-btn--ghost">목록으로</a>
+                </div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+</div>

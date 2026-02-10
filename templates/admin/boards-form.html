@@ -1,0 +1,46 @@
+
+<div th:fragment="content"
+     class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700">
+
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100"
+            th:text="${isImportant} ? '공지 작성' : '게시글 작성'">게시글 작성</h3>
+        <a th:href="@{/admin/boards}"
+           class="text-sm text-gray-600 dark:text-gray-300 hover:text-indigo-600 transition">
+            ← 목록으로
+        </a>
+    </div>
+
+    <form th:action="@{/admin/boards/new}" method="post" class="space-y-6">
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">제목</label>
+            <input type="text" name="title" placeholder="제목을 입력하세요" required
+                   class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100">
+        </div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">내용</label>
+            <textarea name="content" rows="8" placeholder="내용을 입력하세요" required
+                      class="w-full p-3 border rounded-lg resize-none focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"></textarea>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <input type="checkbox" id="isImportant" name="isImportant"
+                   class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+            <label for="isImportant" class="text-sm text-gray-700 dark:text-gray-300">공지로 등록</label>
+        </div>
+
+        <div class="flex justify-end gap-3">
+            <a th:href="@{/admin/boards}"
+               class="px-5 py-2 rounded-lg text-sm bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition">
+                취소
+            </a>
+
+            <button type="submit"
+                    class="px-6 py-2 rounded-lg text-sm font-medium bg-indigo-600 hover:bg-indigo-700 text-white transition">
+                등록
+            </button>
+        </div>
+    </form>
+</div>

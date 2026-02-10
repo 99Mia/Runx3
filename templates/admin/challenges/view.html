@@ -1,0 +1,44 @@
+<!-- src/main/resources/templates/admin/challenges/view.html -->
+<th:block th:fragment="content">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-indigo-600" th:text="${challenge.title}">대회 상세</h1>
+        <div>
+            <a th:href="@{|/admin/challenges/${challenge.challengeId}/edit|}"
+               class="px-4 py-2 bg-yellow-500 text-white rounded mr-2">수정</a>
+            <a th:href="@{/admin/challenges}" class="px-4 py-2 bg-gray-600 text-white rounded">목록</a>
+        </div>
+    </div>
+
+    <div class="space-y-4">
+        <p><b>장소:</b> <span th:text="${challenge.location}">-</span></p>
+
+        <p><b>기간:</b>
+            <span th:text="${#temporals.format(challenge.startDate, 'yyyy-MM-dd HH:mm')}"></span>
+            ~
+            <span th:text="${#temporals.format(challenge.endDate, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+
+        <p><b>참가비:</b> <span th:text="${challenge.fee}">0</span> 원</p>
+
+        <p><b>접수 링크:</b>
+            <a th:if="${not #strings.isEmpty(challenge.registrationLink)}"
+               th:href="${challenge.registrationLink}"
+               class="text-indigo-600 underline"
+               target="_blank"
+               th:text="${challenge.registrationLink}"></a>
+            <span th:if="${#strings.isEmpty(challenge.registrationLink)}"
+                  class="text-gray-400">없음</span>
+        </p>
+
+        <div>
+            <label class="font-semibold block mb-2">코스 지도 이미지</label>
+
+            <img th:if="${challenge.mapFile != null and challenge.mapFile != ''}"
+                 th:src="@{'/uploads/maps_dir/' + ${challenge.mapFile}}"
+                 class="w-full max-w-lg rounded shadow">
+
+            <div th:if="${challenge.mapFile == null or challenge.mapFile == ''}"
+                 class="text-gray-400">이미지 없음</div>
+        </div>
+    </div>
+</th:block>

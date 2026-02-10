@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+<head>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+<div layout:fragment="content">
+
+    <!-- ✅ 대회소식과 폭을 맞추는 컨테이너 -->
+    <main class="container rw-form-page">
+
+        <!-- 상단 타이틀 (대회소식이랑 같은 rw-header 사용) -->
+        <header class="rw-header">
+            <div class="rw-header__inner">
+                <div class="rw-logo">
+                    <h1 class="rw-title">게시글 수정</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- 본문 카드: rw-card 재사용 -->
+        <section class="rw-card rw-form-card">
+            <form action="/board/modify" method="post" enctype="multipart/form-data">
+
+                <input type="hidden" name="boardId" th:value="${boardDTO.boardId}">
+
+                <!-- 제목 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">제목</label>
+                    <input type="text" name="title" class="rw-form-control"
+                           th:value="${boardDTO.title}">
+                </div>
+
+                <!-- 내용 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">내용</label>
+                    <textarea name="content" class="rw-form-control rw-form-textarea" rows="6"
+                              th:text="${boardDTO.content}"></textarea>
+                </div>
+
+                <!-- 기존 업로드 이미지 프리뷰 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">기존 첨부파일</label>
+
+                    <div class="rw-upload-preview"
+                         th:if="${boardDTO.boardImageDTOS != null && boardDTO.boardImageDTOS.size() > 0}">
+                        <div class="rw-upload-item" th:each="imgDTO : ${boardDTO.boardImageDTOS}">
+                            <div th:if="${imgDTO.image}">
+                                <img th:src="|/upload/view/s_${imgDTO.uuid}_${imgDTO.filename}|"
+                                     alt="첨부 이미지">
+                            </div>
+                            <div th:unless="${imgDTO.image}">
+                                <img src="/images/file.jpg" alt="파일 아이콘">
+                            </div>
+                            <span class="rw-upload-name">[[${imgDTO.filename}]]</span>
+                        </div>
+                    </div>
+
+                    <p class="rw-form-help" th:unless="${boardDTO.boardImageDTOS != null && boardDTO.boardImageDTOS.size() > 0}">
+                        기존 첨부파일이 없습니다.
+                    </p>
+                </div>
+
+                <!-- 새 파일 업로드 -->
+                <div class="rw-form-group">
+                    <label class="rw-form-label">파일 업로드</label>
+                    <input type="file" name="files" class="rw-form-control" multiple>
+                    <p class="rw-form-help">이미지 또는 파일을 여러 개 선택할 수 있습니다.</p>
+                </div>
+
+                <!-- 버튼 영역 -->
+                <div class="rw-form-actions">
+                    <button type="submit" class="rw-btn rw-btn--primary">수정하기</button>
+
+                    <a th:href="|@{/board/list}?${pageRequestDTO.getLink()}|"
+                       class="rw-btn rw-btn--ghost">
+                        목록으로
+                    </a>
+                </div>
+            </form>
+        </section>
+    </main>
+
+</div>

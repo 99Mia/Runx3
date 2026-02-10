@@ -1,0 +1,24 @@
+<div th:fragment="content" class="space-y-6">
+    <h3 class="text-2xl font-bold">관리자 대시보드</h3>
+
+    <!-- src/main/resources/templates/admin/dashboard.html -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow">
+            <p class="text-lg">오늘 가입</p>
+            <p class="text-3xl font-bold" th:text="${stats.todayCount}">0</p>
+            <p class="text-sm opacity-80">+<span th:text="${stats.todayGrowth}">0</span>% 전일 대비</p>
+        </div>
+        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-6 rounded-xl shadow">
+            <p class="text-lg">총 회원 수</p>
+            <p class="text-3xl font-bold" th:text="${stats.totalUsers}">0</p>
+        </div>
+        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-6 rounded-xl shadow">
+            <p class="text-lg">비활성 회원</p>
+            <p class="text-3xl font-bold" th:text="${stats.disabledCount}">0</p>
+        </div>
+    </div>
+    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow">
+        <h4 class="text-lg font-semibold mb-4">최근 활동</h4>
+        <p class="text-gray-500">게시글, 댓글 등 추후 연동 예정</p>
+    </div>
+</div>

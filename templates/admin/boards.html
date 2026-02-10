@@ -1,0 +1,91 @@
+<!-- ✅ 관리자 게시판 관리 페이지 -->
+<div th:fragment="content" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 max-w-5xl mx-auto">
+
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">게시판 관리</h3>
+        <a th:href="@{/admin/boards/new}"
+           class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm font-medium flex items-center">
+            + 새 글 작성
+        </a>
+    </div>
+
+    <!-- 검색 & 휴지통 -->
+    <div class="flex justify-between items-center mb-6">
+        <form th:action="@{/admin/boards}" method="get" class="flex-1 max-w-md">
+            <input type="text" name="search" th:value="${search}" placeholder="제목, 내용, 작성자 검색"
+                   class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 dark:bg-gray-700 dark:border-gray-600">
+        </form>
+
+        <a th:href="@{/admin/boards/deleted}"
+           class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:text-red-600">
+            <i class="ti ti-trash"></i>
+            휴지통
+        </a>
+    </div>
+
+    <!-- 게시글 목록 -->
+    <ul class="space-y-4" th:if="${boards != null and boards.hasContent()}">
+        <li th:each="board : ${boards.content}"
+            th:classappend="${board.isImportant} ? 'border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 p-4 rounded-lg' : 'p-4 border-b dark:border-gray-700'"
+            class="transition-shadow hover:shadow">
+
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span th:if="${board.isImportant}" class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">
+                            공지
+                        </span>
+                        <h4 class="font-medium text-lg text-gray-900 dark:text-gray-100"
+                            th:text="${board.title}">제목</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2"
+                       th:text="${board.content}">내용</p>
+                    <div class="text-xs text-gray-500 mt-2">
+                        by <span th:text="${board.users.nickname ?: '알 수 없음'}">작성자</span>
+                        <span th:text="${#temporals.format(board.createdAt, 'yy-MM-dd HH:mm')}">시간</span>
+                        <span th:if="${board.deleted}" class="text-red-600 font-medium ml-2">[삭제됨]</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2 ml-4">
+                    <!-- ✅ 삭제 버튼 -->
+                    <form th:action="@{/admin/boards/{id}/delete(id=${board.boardId})}" method="post" class="inline">
+                        <button type="submit"
+                                class="text-red-600 hover:text-red-800 text-sm font-medium"
+                                onclick="return confirm('삭제하시겠습니까?\n게시글은 휴지통으로 이동됩니다.')">
+                            삭제
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <!-- 빈 목록 -->
+    <div th:if="${boards == null or !boards.hasContent()}" class="text-center py-12 text-gray-500 dark:text-gray-400">
+        <p>등록된 게시글이 없습니다.</p>
+        <div class="mt-4">
+            <a th:href="@{/admin/boards/new}" class="text-indigo-600 hover:underline">게시글 작성</a>
+        </div>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div th:if="${boards != null and boards.totalPages > 1}" class="flex justify-center mt-8">
+        <nav class="flex space-x-1">
+            <a th:if="${!boards.first}"
+               th:href="@{/admin/boards(page=${boards.number - 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">이전</a>
+
+            <a th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}"
+               th:href="@{/admin/boards(page=${i}, search=${search})}"
+               th:text="${i + 1}"
+               th:classappend="${i == boards.number} ? 'bg-indigo-600 text-white' : ''"
+               class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"></a>
+
+            <a th:if="${!boards.last}"
+               th:href="@{/admin/boards(page=${boards.number + 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">다음</a>
+        </nav>
+    </div>
+</div>

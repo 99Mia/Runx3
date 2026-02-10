@@ -1,0 +1,46 @@
+<!-- src/main/resources/templates/admin/challenges/list.html -->
+<th:block th:fragment="content">
+    <div class="flex items-center justify-between mb-4">
+        <h1 class="text-2xl font-bold text-indigo-600">📋 대회 목록</h1>
+        <a th:href="@{/admin/challenges/new}" class="bg-indigo-600 text-white px-4 py-2 rounded">+ 대회 등록</a>
+    </div>
+
+    <table class="w-full border-collapse">
+        <thead class="bg-gray-100">
+        <tr>
+            <th class="p-2 border">대회명</th>
+            <th class="p-2 border">장소</th>
+            <th class="p-2 border">기간</th>
+            <th class="p-2 border">참가비</th>
+            <th class="p-2 border">링크</th>
+            <th class="p-2 border">관리</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="c : ${challenges}">
+            <td class="p-2 border">
+                <a class="text-indigo-600 underline"
+                   th:href="@{|/admin/challenges/${c.challengeId}|}"
+                   th:text="${c.title}">대회명</a>
+            </td>
+            <td class="p-2 border" th:text="${c.location}">-</td>
+            <td class="p-2 border"
+                th:text="${#temporals.format(c.startDate, 'yyyy-MM-dd HH:mm')} + ' ~ ' + ${#temporals.format(c.endDate, 'yyyy-MM-dd HH:mm')}"></td>
+            <td class="p-2 border" th:text="${c.fee} + ' 원'"></td>
+            <td class="p-2 border">
+                <a th:if="${not #strings.isEmpty(c.registrationLink)}"
+                   th:href="${c.registrationLink}" class="text-blue-600 underline" target="_blank">바로가기</a>
+                <span th:if="${#strings.isEmpty(c.registrationLink)}" class="text-gray-400">없음</span>
+            </td>
+            <td class="p-2 border">
+                <a th:href="@{|/admin/challenges/${c.challengeId}/edit|}"
+                   class="px-3 py-1 bg-yellow-500 text-white rounded mr-2">수정</a>
+                <form th:action="@{|/admin/challenges/${c.challengeId}/delete|}" method="post" class="inline"
+                      onsubmit="return confirm('정말 삭제할까요?')">
+                    <button class="px-3 py-1 bg-red-600 text-white rounded" type="submit">삭제</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</th:block>

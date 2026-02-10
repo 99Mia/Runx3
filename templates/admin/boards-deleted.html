@@ -1,0 +1,99 @@
+<!-- src/main/resources/templates/admin/boards-deleted.html -->
+<div th:fragment="content" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 max-w-4xl mx-auto">
+
+    <!-- 상단 -->
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-2xl font-bold text-red-600">휴지통</h3>
+
+        <a th:href="@{/admin/boards}"
+           class="text-sm text-gray-600 hover:text-indigo-600 transition">
+            ← 게시글 목록으로
+        </a>
+    </div>
+
+    <!-- 안내 문구 -->
+    <div class="bg-yellow-50 border border-yellow-300 text-yellow-800 p-4 rounded mb-6 text-sm">
+        <p><strong>⚠️ 주의:</strong>
+            여기서 <span class="text-red-600 font-bold">[완전 삭제]</span>하면
+            <span class="font-semibold">복구 불가능</span>합니다.
+        </p>
+    </div>
+
+    <!-- 검색 -->
+    <form th:action="@{/admin/boards/deleted}" method="get" class="flex items-center gap-2 mb-6 max-w-md">
+        <input type="text" name="search" th:value="${search}" placeholder="삭제된 게시글 검색..."
+               class="flex-1 p-3 border rounded-lg focus:ring-2 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600">
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700">
+            <i class="ti ti-search"></i>
+        </button>
+    </form>
+
+    <!-- 게시글 목록 -->
+    <ul class="space-y-4" th:if="${boards != null and boards.hasContent()}">
+        <li th:each="board : ${boards.content}"
+            class="p-4 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-lg transition-shadow hover:shadow">
+
+            <div class="flex justify-between items-start">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span th:if="${board.isImportant}"
+                              class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-medium">공지</span>
+                        <h4 class="font-medium text-lg line-through text-gray-700 dark:text-gray-300"
+                            th:text="${board.title}">제목</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 italic dark:text-gray-400 line-clamp-2"
+                       th:text="${board.content}">내용</p>
+                    <div class="text-xs text-gray-500 mt-2">
+                        by <span th:text="${board.users?.nickname ?: '탈퇴한 사용자'}">작성자</span> ·
+                        <span th:text="${#temporals.format(board.createdAt, 'yy-MM-dd HH:mm')}">시간</span>
+                        <span class="text-red-600 font-medium ml-2">[삭제됨]</span>
+                    </div>
+                </div>
+
+                <!-- 버튼 -->
+                <div class="flex gap-2 ml-4">
+                    <form th:action="@{/admin/boards/{id}/restore(id=${board.boardId})}" method="post" class="inline">
+                        <button type="submit"
+                                class="text-green-600 hover:text-green-800 text-sm font-medium"
+                                onclick="return confirm('복구하시겠습니까?')">
+                            복구
+                        </button>
+                    </form>
+
+                    <form th:action="@{/admin/boards/{id}/hard-delete(id=${board.boardId})}" method="post" class="inline">
+                        <button type="submit"
+                                class="bg-red-700 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-red-800"
+                                onclick="return confirm('정말 영구 삭제하시겠습니까?\n복구 불가능합니다!')">
+                            완전 삭제
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </li>
+    </ul>
+
+    <!-- 비어 있을 때 -->
+    <div th:if="${boards == null or !boards.hasContent()}" class="text-center py-12 text-gray-500 dark:text-gray-400">
+        <p>휴지통이 비어 있습니다.</p>
+        <a th:href="@{/admin/boards}" class="text-indigo-600 hover:underline">게시글 목록으로 이동</a>
+    </div>
+
+    <!-- 페이지네이션 -->
+    <div th:if="${boards != null and boards.totalPages > 1}" class="flex justify-center mt-8">
+        <nav class="flex space-x-1">
+            <a th:if="${!boards.first}"
+               th:href="@{/admin/boards/deleted(page=${boards.number - 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-gray-100">이전</a>
+
+            <a th:each="i : ${#numbers.sequence(0, boards.totalPages - 1)}"
+               th:href="@{/admin/boards/deleted(page=${i}, search=${search})}"
+               th:text="${i + 1}"
+               th:classappend="${i == boards.number} ? 'bg-red-600 text-white' : ''"
+               class="px-3 py-1 border rounded hover:bg-gray-100"></a>
+
+            <a th:if="${!boards.last}"
+               th:href="@{/admin/boards/deleted(page=${boards.number + 1}, search=${search})}"
+               class="px-3 py-1 border rounded hover:bg-gray-100">다음</a>
+        </nav>
+    </div>
+</div>

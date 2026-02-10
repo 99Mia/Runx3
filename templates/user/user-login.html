@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>로그인 - Runx3</title>
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Pretendard -->
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        /* ===========================
+           GLOBAL (Runx3 스타일 기반)
+        ============================ */
+        body {
+            font-family: 'Pretendard', sans-serif;
+            background: #F6F7F9 !important;
+            color: #1C1E21;
+        }
+
+        /* 로고 텍스트 숨김 */
+        .logo-text {
+            display: none !important;
+        }
+
+        /* ===========================
+           로그인 카드 (Runx3 카드 스타일)
+        ============================ */
+        .login-card {
+            background: #FFFFFF !important;
+            border: 1px solid #E3E5E8 !important;
+            border-radius: 22px !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06) !important;
+        }
+
+        /* ===========================
+           입력창 (Runx3 인풋 스타일)
+        ============================ */
+        .login-input {
+            border-radius: 14px !important;
+            border: 1px solid #D0D2D7 !important;
+            padding: 13px !important;
+            background: #FFFFFF !important;
+            transition: .25s;
+        }
+
+        .login-input:focus {
+            border-color: #1C1E21 !important;
+            box-shadow: 0 0 0 2px rgba(28,30,33,0.15) !important;
+        }
+
+        /* ===========================
+           블랙 버튼 (메인 스타일 동일)
+        ============================ */
+        .login-btn {
+            background: #1C1E21 !important;
+            border-radius: 40px !important;
+            padding: 15px !important;
+            font-weight: 700 !important;
+            font-size: 1.05rem !important;
+            transition: .25s;
+            color: #fff;
+        }
+
+        .login-btn:hover {
+            background: #000 !important;
+            transform: translateY(-2px);
+        }
+
+        /* ===========================
+           구글 로그인 버튼
+        ============================ */
+        .google-btn {
+            border: 1px solid #D0D2D7 !important;
+            border-radius: 14px !important;
+            padding: 12px !important;
+            transition: .25s;
+            background: #fff;
+        }
+
+        .google-btn:hover {
+            background: #F4F5F7 !important;
+        }
+
+        /* ===========================
+           텍스트 컬러
+        ============================ */
+        .text-title {
+            color: #1C1E21 !important;
+            font-weight: 800 !important;
+        }
+        .text-muted {
+            color: #6C7077 !important;
+        }
+
+    </style>
+
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6 bg-[#F6F7F9]">
+
+<div class="max-w-7xl w-full grid lg:grid-cols-2 gap-16 items-center">
+
+    <!-- ======================= 왼쪽 소개 영역 ======================= -->
+    <div class="space-y-8 hidden lg:block pl-4">
+
+        <!-- Runx3 이미지 로고 -->
+        <div class="flex items-center gap-3">
+            <img th:src="@{/images/logo01.png}" alt="Runx3" class="w-36">
+        </div>
+
+        <h1 class="text-5xl font-extrabold text-gray-800 leading-tight">
+            함께 달리면<br>
+            <span class="text-[#1C1E21]">더 멀리 갈 수 있어요</span>
+        </h1>
+
+        <p class="text-lg text-gray-600 leading-relaxed">
+            러너들과 코스를 공유하고,<br>
+            대회 일정과 커뮤니티 소식을 받아보세요.<br>
+            지금 Runx3에서 당신의 러닝을 시작하세요.
+        </p>
+    </div>
+
+    <!-- ======================= 오른쪽 로그인 박스 ======================= -->
+    <div class="bg-white login-card p-10 w-full max-w-lg mx-auto">
+
+        <!-- 모바일 로고 -->
+        <div class="flex justify-center mb-8 lg:hidden">
+            <img th:src="@{/images/logo01.png}" alt="Runx3" class="w-28">
+        </div>
+
+        <h2 class="text-3xl font-bold text-center mb-8 text-gray-800">로그인</h2>
+
+        <form th:action="@{/user/login}" method="post" class="space-y-6">
+
+            <!-- 이메일 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">이메일</label>
+                <input
+                        type="email" name="email"
+                        placeholder="example@run.com"
+                        required
+                        class="w-full login-input outline-none"
+                />
+            </div>
+
+            <!-- 비밀번호 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">비밀번호</label>
+                <input
+                        type="password" name="password"
+                        placeholder="••••••••"
+                        required
+                        class="w-full login-input outline-none"
+                />
+            </div>
+
+            <!-- 로그인 버튼 -->
+            <button type="submit" class="w-full login-btn text-white">
+                로그인
+            </button>
+        </form>
+
+        <!-- 구글 로그인 -->
+        <div class="mt-10">
+            <p class="text-center text-sm text-gray-500 mb-4">간편 로그인</p>
+
+            <div class="flex justify-center">
+                <a href="/oauth2/authorization/google"
+                   class="flex items-center justify-center gap-3 google-btn w-full text-center">
+                    <img src="https://www.google.com/favicon.ico" class="w-5 h-5">
+                    <span class="text-sm font-medium text-gray-700">Google 계정으로 로그인</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- 회원가입 -->
+        <p class="text-center mt-8 text-sm text-gray-600">
+            아직 계정이 없으신가요?
+            <a href="/auth/signup" class="font-semibold text-[#1C1E21] hover:underline">
+                회원가입
+            </a>
+        </p>
+
+    </div>
+</div>
+
+</body>
+</html>

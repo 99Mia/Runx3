@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<head>
+    <meta charset="UTF-8" />
+    <title>대회소식 | Runx3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- CSRF (있다면 자동 주입 / 없으면 무시) -->
+    <meta id="_csrf" th:if="${_csrf}" th:content="${_csrf.token}" />
+    <meta id="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}" />
+
+    <!-- 페이지 전용 CSS -->
+    <th:block layout:fragment="pageStyles">
+        <link rel="stylesheet" th:href="@{/css/challenges.css}">
+    </th:block>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <!-- 페이지 상단(타이틀 + 검색) -->
+    <section class="rw-header" role="region" aria-label="대회소식 헤더">
+        <div class="container rw-header__inner">
+            <h1 class="rw-title">대회소식</h1>
+
+            <form id="searchForm" class="rw-search" role="search"
+                  th:action="@{/challenges}" method="get">
+                <input id="q" name="q" type="text"
+                       placeholder="대회명 검색" aria-label="대회명 검색" />
+                <button type="submit" aria-label="검색">검색</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- 상태 필터 탭 -->
+    <nav class="rw-tabs" aria-label="대회 상태 필터">
+        <div class="container rw-tabs__inner">
+            <button class="tab active" type="button" data-status="">전체</button>
+            <button class="tab" type="button" data-status="UPCOMING">예정</button>
+            <button class="tab" type="button" data-status="ONGOING">진행중</button>
+            <button class="tab" type="button" data-status="ENDED">종료</button>
+        </div>
+    </nav>
+
+    <!-- 카드 그리드 -->
+    <main class="container" role="main">
+        <section id="cardGrid" class="rw-grid" aria-live="polite" aria-busy="false">
+            <!-- JS로 카드가 렌더링됩니다 -->
+        </section>
+
+        <!-- 페이지네이션 -->
+        <nav id="pagination" class="rw-pagination" role="navigation" aria-label="페이지 이동">
+            <!-- JS로 페이지 버튼이 렌더링됩니다 -->
+        </nav>
+    </main>
+
+    <!-- footer 는 공통 레이아웃에서 렌더링 -->
+
+</div>
+
+<!-- 페이지 전용 스크립트 -->
+<th:block layout:fragment="pageScripts">
+    <script th:src="@{/js/challenges.js}"></script>
+</th:block>
+</body>
+</html>

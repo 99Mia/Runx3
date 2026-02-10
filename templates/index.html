@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RUN³ | Movement is Energy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Pretendard', sans-serif;
+            overflow-x: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Background */
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://cdn.pixabay.com/photo/2016/03/27/19/44/marathon-1285471_960_720.jpg') no-repeat center center;
+            background-size: cover;
+            filter: brightness(0.5);
+            z-index: -1;
+        }
+
+        /* Text Animation */
+        h1 {
+            font-size: 6rem;
+            letter-spacing: 5px;
+            color: #fff; /* 글자 색 흰색으로 변경 */
+            font-weight: 900;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(-30px);
+            animation: slideIn 1.5s ease forwards; /* 애니메이션 속도 느리게 변경 */
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        p {
+            font-size: 1.5rem;
+            color: #fff; /* 글자 색 흰색으로 변경 */
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 1.5s ease forwards; /* 애니메이션 속도 느리게 변경 */
+            animation-delay: 1s; /* 딜레이 추가 */
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* CTA Button */
+        .cta {
+            margin-top: 40px;
+            padding: 18px 36px;
+            border: none;
+            border-radius: 50px;
+            background-color: #e50914;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.5s ease-in-out; /* 버튼 호버 애니메이션 속도 느리게 변경 */
+        }
+
+        .cta:hover {
+            background-color: #fff;
+            color: #e50914;
+            transform: scale(1.05);
+        }
+
+        .cta:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+<div class="background-overlay"></div>
+<h1>RUN³</h1>
+<p>움직임이 곧 에너지다.</p>
+<button class="cta" onclick="window.location.href='/main'">시작하기</button>
+</body>
+</html>

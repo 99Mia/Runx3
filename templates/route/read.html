@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{route/layout.html}">
+
+<!-- 페이지 전용 CSS -->
+<th:block layout:fragment="pageStyles">
+    <link rel="stylesheet" th:href="@{/css/route.css}">
+</th:block>
+
+<div layout:fragment="content">
+
+    <!-- ⭐ 페이지 공통 컨테이너 -->
+    <div class="route-page-container">
+
+        <!-- ⭐ 상단 타이틀 영역 (카드 밖) -->
+        <header class="route-title-bar">
+            <h2 class="route-page-title">코스 상세보기</h2>
+            <p class="route-page-sub">러닝 코스 정보와 기록을 확인해 보세요.</p>
+        </header>
+
+        <!-- ⭐ 라운드 카드 -->
+        <div class="card">
+            <div class="card-body">
+
+                <!-- 제목 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">제목</label>
+                    <input type="text" name="title"
+                           class="form-control"
+                           th:value="${route.title}" readonly>
+                </div>
+
+                <!-- 지역 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">지역</label>
+                    <input type="text" name="address"
+                           class="form-control"
+                           th:value="${route.address}" readonly>
+                </div>
+
+                <!-- 난이도 표시 -->
+                <div class="mb-3 d-flex align-items-start gap-3 flex-wrap">
+                    <label class="form-label">난이도</label>
+
+                    <!-- 서버 값 보관용 (필요 없으면 나중에 제거해도 됨) -->
+                    <input type="hidden" id="dataInput" name="difficulty"
+                           th:value="${route.difficulty}">
+
+                    <div class="btn-group" role="group" aria-label="난이도 표시">
+                        <button type="button" id="btnHARD"
+                                class="btn btn-outline-success"
+                                th:classappend="${route.difficulty}=='HARD' ? ' active' : ''">
+                            상
+                        </button>
+                        <button type="button" id="btnMEDIUM"
+                                class="btn btn-outline-success"
+                                th:classappend="${route.difficulty}=='MEDIUM' ? ' active' : ''">
+                            중
+                        </button>
+                        <button type="button" id="btnEASY"
+                                class="btn btn-outline-success"
+                                th:classappend="${route.difficulty}=='EASY' ? ' active' : ''">
+                            하
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 조회수 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">조회수</label>
+                    <input type="text" name="views"
+                           class="form-control"
+                           th:value="${route.views}" readonly>
+                </div>
+
+                <!-- 지도 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">코스 지도</label>
+                    <div id="map"
+                         th:data-routepath="${route.routePath}"
+                         style="width:100%;height:350px;"></div>
+                </div>
+
+                <!-- 거리 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">달린 거리</label>
+                    <input type="text" name="distance"
+                           class="form-control"
+                           th:value="${route.distance}" readonly>
+                </div>
+
+                <!-- 달린 시간 (시/분/초 한 줄 정리) -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12">
+                        <label class="form-label fw-semibold">달린 시간</label>
+                    </div>
+
+                    <div class="col-12 col-sm-4">
+                        <div class="input-group">
+                            <input type="text" name="durationHr"
+                                   class="form-control"
+                                   th:value="${route.durationHr}" readonly>
+                            <span class="input-group-text">시</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-4">
+                        <div class="input-group">
+                            <input type="text" name="durationMin"
+                                   class="form-control"
+                                   th:value="${route.durationMin}" readonly>
+                            <span class="input-group-text">분</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-sm-4">
+                        <div class="input-group">
+                            <input type="text" name="durationS"
+                                   class="form-control"
+                                   th:value="${route.durationS}" readonly>
+                            <span class="input-group-text">초</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 심박수 -->
+                <div class="row g-3 mb-3">
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">평균 심박수</label>
+                        <div class="input-group">
+                            <input type="text" name="heartRateAvg"
+                                   class="form-control"
+                                   th:value="${route.heartRateAvg}" readonly>
+                            <span class="input-group-text">BPM</span>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-6">
+                        <label class="form-label fw-semibold">최대 심박수</label>
+                        <div class="input-group">
+                            <input type="text" name="heartRateMax"
+                                   class="form-control"
+                                   th:value="${route.heartRateMax}" readonly>
+                            <span class="input-group-text">BPM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 메모 -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">메모</label>
+                    <textarea name="description"
+                              class="form-control"
+                              rows="3" readonly>[[${route.description}]]</textarea>
+                </div>
+
+                <!-- 이동 버튼들 -->
+                <div class="mb-3 d-flex gap-2" th:with="link=${pageRequestDTO.getLink()}">
+                    <button type="button" class="btn btn-info">공유하기</button>
+
+                    <a th:href="|@{/route/list}?${link}|" class="btn btn-secondary">
+                        목록
+                    </a>
+
+                    <a th:href="|@{/route/modify(id=${route.id}, mode=2)}&${link}|"
+                       class="btn btn-primary">
+                        수정하기
+                    </a>
+
+                    <a th:href="@{/route/remove(id=${route.id})}"
+                       class="btn btn-danger">
+                        삭제하기
+                    </a>
+                </div>
+
+            </div>
+        </div><!-- /.card -->
+
+    </div><!-- /.route-page-container -->
+</div><!-- /layout:fragment="content" -->
+
+<script layout:fragment="script" th:inline="javascript">
+
+    // controller에서 모델로 넘긴 route.difficulty 값을 JS 변수로 받음
+    var difficulty = /*[[${route.difficulty}]]*/ null;
+    // difficulty 값이 존재하면 해당 버튼에 active 부여
+    if (difficulty) {
+        var btn = document.getElementById('btn'+difficulty);
+        if(btn) {
+            btn.classList.add('active');
+        }
+    }
+
+
+    var lat = /*[[${route.lat}]]*/ 37.566826;
+    var lng = /*[[${route.lng}]]*/ 126.9786567;
+
+    var mapContainer = document.getElementById('map'); // 지도를 표시할 div
+
+    var mapOption = {
+            center: new kakao.maps.LatLng(lat, lng), // 지도의 중심좌표
+            level: 4 // 지도의 확대 레벨
+        };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    var ps = new kakao.maps.services.Places(); // 장소 검색 객체를 생성합니다
+    var drawingFlag = false; // 선이 그려지고 있는 상태를 가지고 있을 변수입니다
+    var moveLine; // 선이 그려지고 있을때 마우스 움직임에 따라 그려질 선 객체 입니다
+    var clickLine // 마우스로 클릭한 좌표로 그려질 선 객체입니다
+    var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
+    var dots = {}; // 선이 그려지고 있을때 클릭할 때마다 클릭 지점과 거리를 표시하는 커스텀 오버레이 배열입니다.
+    var geocoder = new kakao.maps.services.Geocoder();
+
+    // routePath 읽어서 파싱
+    clickLine = mapContainer.dataset.routepath || "[]";
+    let coords = [];
+    try { coords = JSON.parse(clickLine); } catch (e) {console.warn(e);}
+
+
+    if(coords.length >= 2) {
+
+        var latlngs = coords.map(p => new kakao.maps.LatLng(p.lat, p.lng));
+
+        var poly = new kakao.maps.Polyline({
+            map,
+            path: latlngs,
+            strokeWeight: 3,
+            strokeColor: '#db4040',
+            strokeOpacity: 1,
+            strokeStyle: 'solid'
+        });
+
+        var startPos = latlngs[0];
+        var endPos = latlngs[latlngs.length - 1];
+
+        // 시작점 dot
+        new kakao.maps.CustomOverlay({
+            map, position: startPos, zIndex: 2,
+            content: '<span class="dot"></span>'
+        });
+
+        // 도착점 dot
+        new kakao.maps.CustomOverlay({
+            map, position: endPos, zIndex: 2,
+            content: '<span class="dot"></span>'
+        });
+
+        // 총거리 계산 (서버 저장값이 있으면 그 값을 우선 사용)
+        // poly.getLength()로 계산
+        var distance = (Math.round(poly.getLength())); // m 단위 정수
+
+        // 보기 좋은 포맷 (1km 이상이면 소수 1자리 km)
+        var formatDistance = m => (m >= 1000 ? (m/1000).toFixed(1) + 'km' : m + 'm');
+
+        // 출발지 오버레이: 시작점에 한 번만 표시
+        new kakao.maps.CustomOverlay({
+            map, position: startPos, zIndex: 3, yAnchor: 1,
+            content: '<div class="dotOverlay">출발점</div>'
+        });
+
+        // 총거리 오버레이: 도착점에 한 번만 표시
+        new kakao.maps.CustomOverlay({
+            map, position: endPos, zIndex: 3, yAnchor: 1,
+            content: '<div class="dotOverlay">도착점 <span class="number">' + formatDistance(distance) + '</span></div>'
+        });
+
+
+
+
+        // 코스 전체가 보이도록 Bounds 맞춤
+        var bounds = new kakao.maps.LatLngBounds();
+        latlngs.forEach(ll => bounds.extend(ll));
+        map.setBounds(bounds);
+    }
+
+
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 선 그리기가 시작됩니다 그려진 선이 있으면 지우고 다시 그립니다
+    // kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+    //
+    //     // 마우스로 클릭한 위치입니다
+    //     var clickPosition = mouseEvent.latLng;
+    //
+    //     // 지도 클릭이벤트가 발생했는데 선을 그리고있는 상태가 아니면
+    //     if (!drawingFlag) {
+    //
+    //         // 상태를 true로, 선이 그리고있는 상태로 변경합니다
+    //         drawingFlag = true;
+    //
+    //         // 지도 위에 선이 표시되고 있다면 지도에서 제거합니다
+    //         deleteClickLine();
+    //
+    //         // 지도 위에 커스텀오버레이가 표시되고 있다면 지도에서 제거합니다
+    //         deleteDistnce();
+    //
+    //         // 지도 위에 선을 그리기 위해 클릭한 지점과 해당 지점의 거리정보가 표시되고 있다면 지도에서 제거합니다
+    //         deleteCircleDot();
+    //
+    //         // 클릭한 위치를 기준으로 선을 생성하고 지도위에 표시합니다
+    //         // clickLine = new kakao.maps.Polyline({
+    //         //     map: map, // 선을 표시할 지도입니다
+    //         //     path: [clickPosition], // 선을 구성하는 좌표 배열입니다 클릭한 위치를 넣어줍니다
+    //         //     strokeWeight: 3, // 선의 두께입니다
+    //         //     strokeColor: '#db4040', // 선의 색깔입니다
+    //         //     strokeOpacity: 1, // 선의 불투명도입니다 0에서 1 사이값이며 0에 가까울수록 투명합니다
+    //         //     strokeStyle: 'solid' // 선의 스타일입니다
+    //         // });
+    //
+    //         // 선이 그려지고 있을 때 마우스 움직임에 따라 선이 그려질 위치를 표시할 선을 생성합니다
+    //         moveLine = new kakao.maps.Polyline({
+    //             strokeWeight: 3, // 선의 두께입니다
+    //             strokeColor: '#db4040', // 선의 색깔입니다
+    //             strokeOpacity: 0.5, // 선의 불투명도입니다 0에서 1 사이값이며 0에 가까울수록 투명합니다
+    //             strokeStyle: 'solid' // 선의 스타일입니다
+    //         });
+    //
+    //         // 클릭한 지점에 대한 정보를 지도에 표시합니다
+    //         displayCircleDot(clickPosition, 0);
+    //
+    //     } else { // 선이 그려지고 있는 상태이면
+    //
+    //         // 그려지고 있는 선의 좌표 배열을 얻어옵니다
+    //         var path = clickLine.getPath();
+    //
+    //         // 좌표 배열에 클릭한 위치를 추가합니다
+    //         path.push(clickPosition);
+    //
+    //         // 다시 선에 좌표 배열을 설정하여 클릭 위치까지 선을 그리도록 설정합니다
+    //         clickLine.setPath(path);
+    //
+    //         var distance = Math.round(clickLine.getLength());
+    //         displayCircleDot(clickPosition, distance);
+    //     }
+    // });
+
+
+    // 지도에 마우스무브 이벤트를 등록합니다
+    // 선을 그리고있는 상태에서 마우스무브 이벤트가 발생하면 그려질 선의 위치를 동적으로 보여주도록 합니다
+    // kakao.maps.event.addListener(map, 'mousemove', function (mouseEvent) {
+    //
+    //     // 지도 마우스무브 이벤트가 발생했는데 선을 그리고있는 상태이면
+    //     if (drawingFlag){
+    //
+    //         // 마우스 커서의 현재 위치를 얻어옵니다
+    //         var mousePosition = mouseEvent.latLng;
+    //
+    //         // 마우스 클릭으로 그려진 선의 좌표 배열을 얻어옵니다
+    //         var path = clickLine.getPath();
+    //
+    //         // 마우스 클릭으로 그려진 마지막 좌표와 마우스 커서 위치의 좌표로 선을 표시합니다
+    //         var movepath = [path[path.length-1], mousePosition];
+    //         moveLine.setPath(movepath);
+    //         moveLine.setMap(map);
+    //
+    //         var distance = Math.round(clickLine.getLength() + moveLine.getLength()), // 선의 총 거리를 계산합니다
+    //             content = '<div class="dotOverlay distanceInfo">총거리 <span class="number">' + distance + '</span>m</div>'; // 커스텀오버레이에 추가될 내용입니다
+    //         // console.log(clickLine.getLength() + moveLine.getLength())
+    //         // 거리정보를 지도에 표시합니다
+    //         showDistance(content, mousePosition);
+    //     }
+    // });
+
+
+    //var totalDistanceValue=0, lastLat=null, lastLng=null, lastAddress="";
+    // 지도에 마우스 오른쪽 클릭 이벤트를 등록합니다
+    // 선을 그리고있는 상태에서 마우스 오른쪽 클릭 이벤트가 발생하면 선 그리기를 종료합니다
+    // kakao.maps.event.addListener(map, 'rightclick', function (mouseEvent) {
+    //
+    //     // 지도 오른쪽 클릭 이벤트가 발생했는데 선을 그리고있는 상태이면
+    //     if (drawingFlag) {
+    //
+    //         // 마우스무브로 그려진 선은 지도에서 제거합니다
+    //         moveLine.setMap(null);
+    //         moveLine = null;
+    //
+    //         // 마우스 클릭으로 그린 선의 좌표 배열을 얻어옵니다
+    //         var path = clickLine.getPath();
+    //
+    //         // 선을 구성하는 좌표의 개수가 2개 이상이면
+    //         if (path.length > 1) {
+    //
+    //             // 마지막 클릭 지점에 대한 거리 정보 커스텀 오버레이를 지웁니다
+    //             if (dots[dots.length-1].distance) {
+    //                 dots[dots.length-1].distance.setMap(null);
+    //                 dots[dots.length-1].distance = null;
+    //             }
+    //
+    //             totalDistanceValue = Math.round(clickLine.getLength()); // 선의 총 거리를 계산합니다
+    //
+    //             // 마지막 클릭 지점 좌표 (kakao.maps.LatLng)
+    //             var lastLatLng = path[path.length - 1];
+    //             lastLat = lastLatLng.getLat();
+    //             lastLng = lastLatLng.getLng();
+    //
+    //
+    //             // 좌표 -> 주소 변환 (coord2Address 사용)
+    //             geocoder.coord2Address(lastLng, lastLat, function(result, status) {
+    //                 if (status === kakao.maps.services.Status.OK) {
+    //                     // result 배열의 첫 항목에 주소 정보가 있음
+    //                     lastAddress = result[0].address ? result[0].address.address_name : '';
+    //
+    //                     document.getElementById('mapDistance').value = totalDistanceValue;
+    //                     document.getElementById('mapLat').value = lastLat;
+    //                     document.getElementById('mapLng').value = lastLng;
+    //                     document.getElementById('mapAddress').value = lastAddress;
+    //
+    //                 }else{
+    //                     console.warn("주소 변환 실패:", status);
+    //                 }
+    //             });
+    //
+    //
+    //             content = getTimeHTML(distance); // 커스텀오버레이에 추가될 내용입니다
+    //             showDistance(content, path[path.length-1]); // 그려진 선의 거리정보를 지도에 표시합니다
+    //
+    //         } else {
+    //             // 선을 구성하는 좌표의 개수가 1개 이하이면
+    //             // 지도에 표시되고 있는 선과 정보들을 지도에서 제거합니다.
+    //             deleteClickLine();
+    //             deleteCircleDot();
+    //             deleteDistnce();
+    //         }
+    //
+    //         // 상태를 false로, 그리지 않고 있는 상태로 변경합니다
+    //         drawingFlag = false;
+    //     }
+    // });
+
+
+
+    // 클릭으로 그려진 선을 지도에서 제거하는 함수입니다
+    // function deleteClickLine() {
+    //     if (clickLine) {
+    //         clickLine.setMap(null);
+    //         clickLine = null;
+    //     }
+    // }
+
+    // 마우스 드래그로 그려지고 있는 선의 총거리 정보를 표시하고
+    // 마우스 오른쪽 클릭으로 선 그리가 종료됐을 때 선의 정보를 표시하는 커스텀 오버레이를 생성하고 지도에 표시하는 함수입니다
+    // function showDistance(content, position) {
+    //
+    //     if (distanceOverlay) { // 커스텀오버레이가 생성된 상태이면
+    //
+    //         // 커스텀 오버레이의 위치와 표시할 내용을 설정합니다
+    //         distanceOverlay.setPosition(position);
+    //         distanceOverlay.setContent(content);
+    //
+    //     } else { // 커스텀 오버레이가 생성되지 않은 상태이면
+    //
+    //         // 커스텀 오버레이를 생성하고 지도에 표시합니다
+    //         distanceOverlay = new kakao.maps.CustomOverlay({
+    //             map: map, // 커스텀오버레이를 표시할 지도입니다
+    //             content: content,  // 커스텀오버레이에 표시할 내용입니다
+    //             position: position, // 커스텀오버레이를 표시할 위치입니다.
+    //             xAnchor: 0,
+    //             yAnchor: 0,
+    //             zIndex: 3
+    //         });
+    //     }
+    // }
+
+    // 그려지고 있는 선의 총거리 정보와
+    //선 그리가 종료됐을 때 선의 정보를 표시하는 커스텀 오버레이를 삭제하는 함수입니다
+    // function deleteDistnce () {
+    //     if (distanceOverlay) {
+    //         distanceOverlay.setMap(null);
+    //         distanceOverlay = null;
+    //     }
+    // }
+
+    // 선이 그려지고 있는 상태일 때 지도를 클릭하면 호출하여
+    // 클릭 지점에 대한 정보 (동그라미와 클릭 지점까지의 총거리)를 표출하는 함수입니다
+    // function displayCircleDot(position, distance) {
+    //
+    //     // 클릭 지점을 표시할 빨간 동그라미 커스텀오버레이를 생성합니다
+    //     var circleOverlay = new kakao.maps.CustomOverlay({
+    //         content: '<span class="dot"></span>',
+    //         position: position,
+    //         zIndex: 1
+    //     });
+    //
+    //     // 지도에 표시합니다
+    //     circleOverlay.setMap(map);
+    //
+    //     if (distance > 0) {
+    //         // 클릭한 지점까지의 그려진 선의 총 거리를 표시할 커스텀 오버레이를 생성합니다
+    //         var distanceOverlay = new kakao.maps.CustomOverlay({
+    //             content: '<div class="dotOverlay">거리 <span class="number">' + distance + '</span>m</div>',
+    //             position: position,
+    //             yAnchor: 1,
+    //             zIndex: 2
+    //         });
+    //
+    //         // 지도에 표시합니다
+    //         distanceOverlay.setMap(map);
+    //     }
+    //
+    //     // 배열에 추가합니다
+    //     dots.push({circle:circleOverlay, distance: distanceOverlay});
+    // }
+
+    // 클릭 지점에 대한 정보 (동그라미와 클릭 지점까지의 총거리)를 지도에서 모두 제거하는 함수입니다
+    // function deleteCircleDot() {
+    //     var i;
+    //
+    //     for ( i = 0; i < dots.length; i++ ){
+    //         if (dots[i].circle) {
+    //             dots[i].circle.setMap(null);
+    //         }
+    //
+    //         if (dots[i].distance) {
+    //             dots[i].distance.setMap(null);
+    //         }
+    //     }
+    //
+    //     dots = [];
+    // }
+
+    // 마우스 우클릭 하여 선 그리기가 종료됐을 때 호출하여
+    // 그려진 선의 총거리 정보를
+    // HTML Content를 만들어 리턴하는 함수입니다
+    // function getTimeHTML(distance) {
+    //     var content = '<ul class="dotOverlay distanceInfo">';
+    //     content += '    <li>';
+    //     content += '        <span class="label">총거리</span><span class="number">' + distance + '</span>m';
+    //     content += '    </li>';
+    //     content += '</ul>'
+    //     return content;
+    // }
+
+
+    // 검색 폼 이벤트 연결
+    // document.getElementById('searchForm').addEventListener('submit', function(e) {
+    //     e.preventDefault();
+    //
+    //     var keyword = document.getElementById('searchPlace').value;
+    //     if (!keyword.trim()) {
+    //         alert('검색어를 입력하세요!');
+    //         return;
+    //     }
+    //
+    //     // 키워드로 장소를 검색합니다
+    //     ps.keywordSearch(keyword, placesSearchCB);
+    // });
+
+
+    // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+    // function placesSearchCB (data, status, pagination) {
+    //     if (status === kakao.maps.services.Status.OK) {
+    //
+    //         // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+    //         // LatLngBounds 객체에 좌표를 추가합니다
+    //         var bounds = new kakao.maps.LatLngBounds();
+    //
+    //         for (var i=0; i<data.length; i++) {
+    //             bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+    //         }
+    //
+    //         // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+    //         map.setBounds(bounds);
+    //
+    //         var center = map.getCenter();
+    //         var centerCoords = {
+    //             lat: center.getLat(),
+    //             lng: center.getLng()
+    //         };
+    //         console.log("지도 중심좌표 저장됨:", centerCoords)
+    //
+    //     }
+    // }
+
+</script>

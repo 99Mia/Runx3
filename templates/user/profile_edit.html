@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>RunTogether - 프로필 수정</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet"/>
+
+    <style>
+        /* ========================================
+           GLOBAL 스타일 (Runx3 스타일 기반)
+        ======================================== */
+        body {
+            background: #F6F7F9 !important;
+            font-family: 'Inter', sans-serif;
+            color: #1C1E21 !important;
+        }
+
+        /* ========================================
+           헤더
+        ======================================== */
+        header {
+            background: #FFFFFF !important;
+            border-bottom: 1px solid #E3E5E8 !important;
+            box-shadow: none !important;
+        }
+        header a span {
+            color: #1C1E21 !important;
+            font-weight: 800 !important;
+        }
+        header nav a {
+            color: #1C1E21 !important;
+            font-weight: 500;
+        }
+        header nav a:hover {
+            color: #000 !important;
+        }
+        header i {
+            color: #1C1E21 !important;
+        }
+
+        /* ========================================
+           카드 / 섹션 박스
+        ======================================== */
+        .card-box,
+        aside,
+        section {
+            background: #FFFFFF !important;
+            border: 1px solid #E3E5E8 !important;
+            border-radius: 20px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06) !important;
+        }
+
+        /* ========================================
+           사이드바
+        ======================================== */
+        aside nav a {
+            border-radius: 14px !important;
+            padding: 10px 14px !important;
+            font-weight: 500;
+            color: #1C1E21 !important;
+        }
+        aside nav a:hover {
+            background: #F0F2F4 !important;
+            color: #000 !important;
+        }
+        aside nav a.bg-green-100 {
+            background: #E8E9EB !important;
+            color: #1C1E21 !important;
+            font-weight: 700 !important;
+        }
+
+        /* ========================================
+           입력 요소
+        ======================================== */
+        input, textarea {
+            border-radius: 14px !important;
+            border: 1px solid #D0D2D7 !important;
+            background: #FAFAFA !important;
+            transition: .25s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #1C1E21 !important;
+            background: #FFFFFF !important;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.15) !important;
+        }
+
+        .input-label {
+            font-weight: 700;
+            color: #1C1E21 !important;
+        }
+
+        /* ========================================
+           프로필 이미지
+        ======================================== */
+        img.preview {
+            width: 6rem;
+            height: 6rem;
+            border-radius: 9999px;
+            object-fit: cover;
+            border: 4px solid #E3E5E8 !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+        }
+
+        /* ========================================
+           활동 요약 박스
+        ======================================== */
+        .summary-box {
+            background: #FAFAFA !important;
+            border: 1px solid #E3E5E8 !important;
+            border-radius: 16px !important;
+        }
+
+        /* ========================================
+           버튼 스타일
+        ======================================== */
+        .cancel-btn {
+            border: 1px solid #D0D2D7 !important;
+            border-radius: 14px !important;
+            padding: 10px 20px !important;
+            transition: .25s;
+        }
+        .cancel-btn:hover {
+            background: #F0F2F4 !important;
+        }
+
+        .submit-btn {
+            background: #1C1E21 !important;
+            border-radius: 14px !important;
+            padding: 10px 28px !important;
+            font-weight: 700 !important;
+            color: #fff !important;
+            transition: .25s;
+        }
+        .submit-btn:hover {
+            background: #000 !important;
+            transform: translateY(-2px);
+        }
+
+        /* ========================================
+           푸터
+        ======================================== */
+        footer {
+            background: #1C1E21 !important;
+            color: #DDD !important;
+        }
+    </style>
+
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                document.getElementById('profilePreview').src = reader.result;
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+<!-- 헤더 동일 -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+        <a href="/" class="flex items-center gap-2">
+            <i class="ri-run-line text-3xl"></i>
+            <span class="text-2xl font-bold">RunTogether</span>
+        </a>
+        <nav class="hidden md:flex gap-8 font-medium">
+            <a href="/route/list" class="hover:text-black">코스</a>
+            <a href="/board/list" class="hover:text-black">커뮤니티</a>
+            <a href="/challenges" class="hover:text-black">대회소식</a>
+            <a href="/user/mypage" class="font-semibold">마이페이지</a>
+        </nav>
+    </div>
+</header>
+
+<!-- 본문 -->
+<main class="flex-1 max-w-7xl mx-auto flex flex-col md:flex-row px-6 py-10 gap-8">
+
+    <!-- 사이드바 -->
+    <aside class="w-full md:w-1/4 p-6">
+        <h2 class="text-lg font-semibold mb-4">마이페이지</h2>
+        <nav class="space-y-2">
+            <a href="/user/mypage?tab=activity" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
+                <i class="ri-user-line"></i> 활동 요약
+            </a>
+
+            <a href="/user/profile/edit" class="flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-200 font-semibold">
+                <i class="ri-edit-2-line"></i> 프로필 수정
+            </a>
+
+            <a href="/user/settings" class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-200">
+                <i class="ri-settings-3-line"></i> 설정
+            </a>
+        </nav>
+    </aside>
+
+    <!-- 메인 폼 -->
+    <section class="flex-1 p-10">
+        <h2 class="text-2xl font-extrabold mb-8 flex items-center gap-2">
+            <i class="ri-user-settings-line text-3xl"></i>
+            프로필 수정
+        </h2>
+
+        <form th:action="@{/user/profile/edit}" method="post" enctype="multipart/form-data" class="space-y-8">
+
+            <!-- 프로필 이미지 -->
+            <div class="flex flex-col sm:flex-row items-center gap-8">
+                <img id="profilePreview"
+                     th:src="${profile.profileImage != null ? profile.profileImage : '/images/default-profile.png'}"
+                     class="preview">
+
+                <div>
+                    <label class="input-label block mb-2">프로필 이미지 변경</label>
+                    <input type="file" name="profileImage" accept="image/*" onchange="previewImage(event)"
+                           class="block w-full rounded-md border p-2 cursor-pointer"/>
+                </div>
+            </div>
+
+            <!-- 닉네임 -->
+            <div>
+                <label class="input-label block mb-2">닉네임</label>
+                <input type="text" name="nickname" th:value="${profile.nickname}" readonly
+                       class="w-full rounded-lg bg-gray-100 cursor-not-allowed">
+            </div>
+
+            <!-- 소개 -->
+            <div>
+                <label class="input-label block mb-2">소개</label>
+                <textarea name="bio" rows="3"
+                          th:text="${profile.bio}"
+                          class="w-full rounded-lg"></textarea>
+            </div>
+
+            <!-- 활동 요약 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+
+                <div class="summary-box p-4">
+                    <label class="input-label block mb-1">총 거리 (km)</label>
+                    <input type="number" step="0.1" name="totalDistance" th:value="${profile.totalDistance}"
+                           class="w-full rounded-md text-center">
+                </div>
+
+                <div class="summary-box p-4">
+                    <label class="input-label block mb-1">총 시간 (분)</label>
+                    <input type="number" step="1" name="totalTime" th:value="${profile.totalTime}"
+                           class="w-full rounded-md text-center">
+                </div>
+
+                <div class="summary-box p-4">
+                    <label class="input-label block mb-1">최근 4주 거리 (km)</label>
+                    <input type="number" step="0.1" name="recent4WeeksDistance" th:value="${profile.recent4WeeksDistance}"
+                           class="w-full rounded-md text-center">
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex justify-end gap-4 mt-12">
+                <a href="/user/mypage"
+                   class="cancel-btn">
+                    취소
+                </a>
+                <button type="submit"
+                        class="submit-btn">
+                    수정 완료
+                </button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<!-- 푸터 -->
+<footer class="py-8 mt-auto text-center">
+    <p class="text-sm">© 2025 RunTogether. All rights reserved.</p>
+</footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const tabs = ['profile', 'activity', 'course', 'subscription'];
+        function showTab(tab) {
+            tabs.forEach(t => {
+                const tabBtn = document.getElementById(`tab-${t}`);
+                const tabContent = document.getElementById(`content-${t}`);
+                if (tabBtn && tabContent) {
+                    tabBtn.classList.remove('tab-active');
+                    tabContent.classList.add('hidden');
+                }
+            });
+            if (document.getElementById(`tab-${tab}`)) {
+                document.getElementById(`tab-${tab}`).classList.add('tab-active');
+                document.getElementById(`content-${tab}`).classList.remove('hidden');
+            }
+        }
+        const urlParams = new URLSearchParams(window.location.search);
+        showTab(urlParams.get('tab') || 'profile');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<head>
+    <title>Runx3</title>
+
+    <th:block layout:fragment="pageStyles">
+        <link rel="stylesheet" th:href="@{/css/main.css}">
+    </th:block>
+</head>
+
+<div layout:fragment="content">
+
+    <!-- HERO -->
+    <section class="hero"
+             th:style="'background-image: url(' + @{/images/main_image.jpg} + ');'">
+        <div class="hero-overlay"></div>
+
+        <div class="hero-inner container">
+
+            <h1 class="hero-title">러닝의 새로운 시작</h1>
+            <p class="hero-desc">기록하고 공유하며, 더 나은 나를 만들어보세요.</p>
+
+            <a class="hero-btn" th:href="@{/route/register}">코스 등록하기</a>
+        </div>
+    </section>
+
+    <main class="container grid">
+
+        <!-- 인기 코스 -->
+        <section class="card card--wide">
+            <h2 class="card-title">🔥 인기 코스 Top3</h2>
+
+            <div class="course-list">
+                <div class="course-item">
+                    <img src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2F20131008_149%2Fhwasuboon2_1381209153771p5OHU_JPEG%2FDSCN4661.JPG&type=a340" alt="">
+                    <p>한강 러닝 코스 – 5km 추천</p>
+                </div>
+
+                <div class="course-item">
+                    <img src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAxODExMDNfMjM1%2FMDAxNTQxMjExODE3OTc3.HRIbARQhVUndH2X0TKzQnXS8ya74Rj7C8_du0FfxFOog.YKJSPATVy6LSKU7bpNLiCNt9bZNGDmuKnt43p1w79gog.JPEG.wsjeong52%2F20181103_094410.jpg&type=l340_165" alt="">
+                    <p>남산 둘레길 – 쉼 없는 숲 러닝</p>
+                </div>
+
+                <div class="course-item">
+                    <img src="https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNTA4MDlfMjg3%2FMDAxNzU0NzM3NzA0NTQw.m6pu-QNjqBPaLEkUBo4P2Si7QIMZamtUaIFDU_TSb60g.Q_6ee1ne-qRUvVNtcQJMCpQI56q_oCZTH5auUZcc2AQg.JPEG%2F318e2395a4862c179218c2932fd856ff7b5885cf.jpeg&type=a340" alt="">
+                    <p>올림픽공원 평지 코스 – 초보자용</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 대회 일정 -->
+        <section class="card event-card">
+            <h2 class="card-title">🏆 다가오는 대회 일정</h2>
+
+            <div class="event-grid">
+                <a th:href="@{/challenges}">
+                <div class="event-wrap">
+                    <a th:href="@{/challenges}"><img src="http://localhost:8085/uploads/maps_dir/1763011370770_2025_poster1.jpg" alt=""></a>
+                    <div class="event-text">
+                        <strong>WeRunWe路</strong><br>
+                        2025-10-25 ~ 2025-11-16<br>
+                        풀코스 · 하프 · 10K
+                    </div>
+                </div>
+
+                <div class="event-wrap">
+                    <a th:href="@{/challenges}"><img src="http://localhost:8085/uploads/maps_dir/1763011390400_2025_poster3.jpg" alt=""></a>
+                    <div class="event-text">
+                        <strong>제3회 거제 노자산 트레일런</strong><br>
+                        2025-11-15 ~ 2025-11-15<br>
+                        10K · 8K
+                    </div>
+                </div>
+
+                <div class="event-wrap">
+                    <a th:href="@{/challenges}"><img src="http://localhost:8085/uploads/maps_dir/1763011381223_2025_poster2.jpg" alt=""></a>
+                    <div class="event-text">
+                        <strong>GIVE RUN 2025 부산</strong><br>
+                        2025-11-08 ~ 2025-11-08<br>
+                        10K
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- 후기 -->
+        <aside class="stack">
+            <a class="stack-btn">✨ 최신 후기 보기</a>
+            <a class="stack-btn">🔥 가장 많이 본 후기</a>
+            <a class="stack-btn">📝 전체 커뮤니티 가기</a>
+        </aside>
+
+    </main>
+
+</div>
+
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+
+
+<body>
+<div layout:fragment="content">
+
+    <!-- 로그인 사용자 정보 -->
+    <input type="hidden" id="loginUserId"
+           th:value="${#authentication.principal != null ? #authentication.principal.id : 0}" />
+    <input type="hidden" id="loginUsername"
+           th:value="${#authentication.principal != null ? #authentication.principal.username : ''}" />
+
+    <main class="container rw-detail-page">
+
+        <!-- 제목 -->
+        <header class="rw-header">
+            <div class="rw-header__inner">
+                <div class="rw-logo">
+                    <h1 class="rw-title">게시글 상세보기</h1>
+                </div>
+            </div>
+        </header>
+
+        <!-- 게시글 카드 -->
+        <section class="rw-card rw-detail-card" th:if="${boardDTO != null}">
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">번호</div>
+                <div class="rw-detail-value">[[${boardDTO.boardId}]]</div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">제목</div>
+                <div class="rw-detail-value rw-detail-title">[[${boardDTO.title}]]</div>
+            </div>
+
+            <div class="rw-detail-row rw-detail-row--content">
+                <div class="rw-detail-label">내용</div>
+                <div class="rw-detail-value rw-detail-content">
+                    <pre>[[${boardDTO.content}]]</pre>
+                </div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">첨부파일</div>
+                <div class="rw-detail-value">
+
+                    <!-- 첨부 이미지 목록 -->
+                    <div class="rw-upload-preview"
+                         th:if="${boardDTO.boardImageDTOS != null && boardDTO.boardImageDTOS.size() > 0}">
+                        <div class="rw-upload-item" th:each="imgDTO : ${boardDTO.boardImageDTOS}">
+                            <div th:if="${imgDTO.image}">
+                                <img th:src="@{/board/upload/view/{filename}(filename=${imgDTO.thumbnail})}"
+                                     alt="Board Image">
+                            </div>
+                            <div th:unless="${imgDTO.image}">
+                                <img src="/images/file.jpg" alt="file icon">
+                            </div>
+                            <span class="rw-upload-name">[[${imgDTO.filename}]]</span>
+                        </div>
+                    </div>
+
+                    <!-- 첨부 없음 -->
+                    <span th:unless="${boardDTO.boardImageDTOS != null && boardDTO.boardImageDTOS.size() > 0}">
+                        첨부파일 없음
+                    </span>
+
+                </div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">작성자</div>
+                <div class="rw-detail-value">[[${boardDTO.username}]]</div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">등록일</div>
+                <div class="rw-detail-value">
+                    [[${#temporals.format(boardDTO.regDate,'yyyy-MM-dd HH:mm:ss')}]]
+                </div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">수정일</div>
+                <div class="rw-detail-value">
+                    [[${boardDTO.modeDate}]]
+                </div>
+            </div>
+
+            <div class="rw-detail-row">
+                <div class="rw-detail-label">조회수</div>
+                <div class="rw-detail-value">[[${boardDTO.views}]]</div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="rw-detail-actions" th:with="link=${pageRequestDTO.getLink()}">
+                <a th:href="|@{/board/modify(boardId=${boardDTO.boardId},mode=2)}&${link}|"
+                   class="rw-btn rw-btn--primary">수정하기</a>
+
+                <a th:href="@{/board/remove(boardId=${boardDTO.boardId})}"
+                   class="rw-btn rw-btn--danger">삭제하기</a>
+
+                <a th:href="|@{/board/list}?${link}|"
+                   class="rw-btn rw-btn--ghost">목록으로</a>
+            </div>
+
+        </section>
+
+        <!-- 댓글 카드 -->
+        <section class="rw-card rw-reply-card">
+            <div class="rw-reply-header">
+                <h2 class="rw-reply-title">댓글</h2>
+                <button class="rw-btn rw-btn--primary addReplyBtn">댓글 작성</button>
+            </div>
+
+            <ul class="replyList"></ul>
+            <div class="rw-reply-pagination">
+                <ul class="replyPaging"></ul>
+            </div>
+        </section>
+
+        <!-- 댓글 등록 모달 -->
+        <div class="modal registerModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">댓글 작성</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>내용</label>
+                        <input type="text" class="form-control commentText">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="rw-btn rw-btn--ghost closeBtn">닫기</button>
+                        <button class="rw-btn rw-btn--primary registerBtn">등록</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 댓글 수정 모달 -->
+        <div class="modal modifyModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title commentHeader"></h5>
+                        <button class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>수정 내용</label>
+                        <input type="text" class="form-control modifyText">
+                    </div>
+                    <div class="modal-footer">
+                        <button class="rw-btn rw-btn--ghost modifyCloseBtn">닫기</button>
+                        <button class="rw-btn rw-btn--danger removeBtn">삭제</button>
+                        <button class="rw-btn rw-btn--primary modifyBtn">수정</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</div>
+
+<script layout:fragment="pageScripts" th:inline="javascript">
+
+    const boardId = '[[${boardDTO != null ? boardDTO.boardId : 0}]]';
+    const loginUserId = parseInt(document.getElementById("loginUserId").value);
+    const loginUsername = document.getElementById("loginUsername").value;
+
+    const replyList = document.querySelector(".replyList");
+    const replyPaging = document.querySelector(".replyPaging");
+
+    let page = 1;
+    let size = 3;
+
+    /* 댓글 목록 출력 */
+    function printList(dtoList) {
+        let html = "";
+
+        if (dtoList && dtoList.length > 0) {
+            dtoList.forEach(dto => {
+                html += `
+                    <li class="list-group-item d-flex commentItem">
+                        <span class="col-2">${dto.commentId}</span>
+                        <span class="col-6" data-comment-id="${dto.commentId}">
+                            ${dto.content}
+                        </span>
+                        <span class="col-2">${dto.nickname ?? "Guest"}</span>
+                        <span class="col-2">${dto.createdAt ? new Date(dto.createdAt).toLocaleString() : ""}</span>
+                    </li>`;
+            });
+        } else {
+            html = `<li class="list-group-item text-center text-muted">등록된 댓글이 없습니다.</li>`;
+        }
+        replyList.innerHTML = html;
+    }
+
+    /* 댓글 리스트 */
+    function getList({boardId, page, size}) {
+        return axios.get(`/comments/list/${boardId}`, { params: { page, size } })
+            .then(res => res.data);
+    }
+
+    function loadReplies() {
+        getList({boardId, page, size}).then(data => {
+            printList(data.dtoList);
+            printPages(data);
+        });
+    }
+
+    /* 댓글 등록 */
+    function addReply(obj) {
+        return axios.post("/comments", obj).then(res => res.data);
+    }
+
+    const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"));
+    document.querySelector(".addReplyBtn").onclick = () => {
+        if (!loginUserId) return alert("로그인 후 댓글 작성 가능");
+        registerModal.show();
+    };
+
+    document.querySelector(".registerBtn").onclick = () => {
+        const text = document.querySelector(".commentText").value;
+        if (!text) return alert("내용을 입력하세요");
+
+        addReply({
+            boardId,
+            content: text,
+            userId: loginUserId,
+            nickname: loginUsername
+        }).then(() => {
+            registerModal.hide();
+            loadReplies();
+        });
+    };
+
+    /* 댓글 수정/삭제 */
+    const modifyModal = new bootstrap.Modal(document.querySelector(".modifyModal"));
+    replyList.addEventListener("click", (e) => {
+        const target = e.target;
+        if (!target.dataset.commentId) return;
+        const commentId = target.dataset.commentId;
+
+        axios.get(`/comments/${commentId}`).then(res => {
+            const reply = res.data;
+            document.querySelector(".commentHeader").dataset.commentId = reply.commentId;
+            document.querySelector(".modifyText").value = reply.content;
+            modifyModal.show();
+        });
+    });
+
+    document.querySelector(".modifyBtn").onclick = () => {
+        const id = document.querySelector(".commentHeader").dataset.commentId;
+        const content = document.querySelector(".modifyText").value;
+
+        axios.put(`/comments/${id}`, { content }).then(() => {
+            modifyModal.hide();
+            loadReplies();
+        });
+    };
+
+    document.querySelector(".removeBtn").onclick = () => {
+        const id = document.querySelector(".commentHeader").dataset.commentId;
+
+        axios.delete(`/comments/${id}`).then(() => {
+            modifyModal.hide();
+            loadReplies();
+        });
+    };
+
+    /* 페이징 */
+    function printPages(data) {
+        const totalPages = Math.ceil(data.total / size);
+        let html = "";
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <li class="page-item ${i === page ? "active" : ""}">
+                    <a class="page-link" data-page="${i}">${i}</a>
+                </li>`;
+        }
+        replyPaging.innerHTML = html;
+    }
+
+    replyPaging.addEventListener("click", (e) => {
+        if (e.target.tagName !== "A") return;
+        page = parseInt(e.target.dataset.page);
+        loadReplies();
+    });
+
+    loadReplies();
+
+</script>
+</body>
+</html>

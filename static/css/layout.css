@@ -1,0 +1,150 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    background: #F6F7F9;
+    color: #222;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.container {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding: 22px 0;
+
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: saturate(180%) blur(20px);
+
+    /* 기존 border 제거 */
+    border-bottom: none;
+
+    /* 🔥 아래쪽 그라데이션 */
+    box-shadow: 0 8px 20px -10px rgba(0,0,0,0.15);
+}
+
+
+.header.scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 10px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+/* 내부 정렬 */
+.header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* 로고 */
+.logo {
+    display: flex;
+    align-items: center;
+    height: 45px;
+}
+
+.logo-img {
+    height: 45px;
+    object-fit: contain;
+    transition: opacity .2s;
+}
+
+.logo-img:hover {
+    opacity: 0.8;
+}
+
+/* ------------------------------ */
+/* NAVIGATION                     */
+/* ------------------------------ */
+.nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.nav a {
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: #222;
+    opacity: .85;
+    transition: opacity .2s, color .2s;
+}
+
+.nav a:hover {
+    opacity: 1;
+}
+
+/* 구분선 */
+.nav-sep {
+    width: 1px;
+    height: 20px;
+    background: rgba(0,0,0,0.2);
+}
+
+/* 로그인 사용자 */
+.user-welcome a {
+    display: flex;
+    align-items: center;
+    font-weight: 600;
+}
+
+.user-welcome i {
+    margin-right: 4px;
+}
+
+/* 로그아웃 버튼 */
+.logout-form {
+    display: inline-block;
+}
+
+.logout-btn {
+    background: none;
+    border: none;
+    color: #222;
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: .65;
+    transition: opacity .2s;
+}
+
+.logout-btn:hover {
+    opacity: 1;
+}
+
+/* ------------------------------ */
+/* MAIN CONTENT                   */
+/* ------------------------------ */
+.content {
+    margin-top: 82px; /* 고정 헤더 영역 확보 */
+    padding-bottom: 60px;
+}
+
+/* ------------------------------ */
+/* FOOTER                         */
+/* ------------------------------ */
+.footer {
+    background: #FAFAFA;
+    border-top: 1px solid rgba(0,0,0,0.07);
+    padding: 40px 0;
+    text-align: center;
+    color: #555;
+    font-size: 0.9rem;
+}

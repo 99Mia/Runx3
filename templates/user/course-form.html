@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>코스 등록 | RunningPro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 폰트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --main-black: #1C1E21;
+            --gray-bg: #F6F7F9;
+            --gray-light: #E3E5E8;
+            --text-dark: #1C1E21;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: "Noto Sans KR", sans-serif;
+            background: var(--gray-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* ------------------ HEADER ------------------ */
+        header {
+            background: white;
+            border-bottom: 1px solid var(--gray-light);
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+        }
+
+        header .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--main-black);
+            opacity: 0.7;
+        }
+
+        /* ------------------ FORM CARD ------------------ */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            padding: 3rem 1rem;
+        }
+
+        .form-container {
+            background: white;
+            border: 1px solid var(--gray-light);
+            border-radius: 22px;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+            width: 100%;
+            max-width: 650px;
+            padding: 2.5rem;
+        }
+
+        h2 {
+            text-align: center;
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 2rem;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-top: 1rem;
+            display: block;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.9rem;
+            margin-top: 0.5rem;
+            border-radius: 14px;
+            border: 1px solid #D0D2D7;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            border-color: var(--main-black);
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.15);
+        }
+
+        /* 블랙 버튼 */
+        button {
+            background: var(--main-black);
+            color: white;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            border-radius: 40px;
+            padding: 15px;
+            margin-top: 2rem;
+            font-size: 1.1rem;
+            transition: 0.25s;
+        }
+
+        button:hover {
+            background: black;
+            transform: translateY(-3px);
+        }
+
+        /* ------------------ FOOTER ------------------ */
+        footer {
+            background: white;
+            border-top: 1px solid var(--gray-light);
+            color: #6C7077;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <a href="/" class="logo">
+            <img th:src="@{/images/logo01.png}" alt="logo" style="height:28px;">
+        </a>
+        <ul class="nav-links">
+            <li><a href="/">홈</a></li>
+            <li><a href="/community">커뮤니티</a></li>
+            <li><a href="/user/mypage">마이페이지</a></li>
+            <li><a href="/logout">로그아웃</a></li>
+        </ul>
+    </div>
+</header>
+
+<main>
+    <div class="form-container">
+        <h2>새 코스 등록</h2>
+
+        <form th:action="@{/user/mypage/course}" method="post">
+            <label for="courseName">코스 이름</label>
+            <input type="text" id="courseName" name="courseName" placeholder="예: 한강 러닝 코스" required />
+
+            <label for="distance">거리 (km)</label>
+            <input type="number" step="0.1" id="distance" name="distance" placeholder="예: 5.0" required />
+
+            <label for="timeSpent">소요 시간 (분)</label>
+            <input type="number" id="timeSpent" name="timeSpent" placeholder="예: 60" required />
+
+            <label for="completedAt">완료일</label>
+            <input type="date" id="completedAt" name="completedAt" required />
+
+            <button type="submit">등록하기</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p>© 2025 RunningPro. All rights reserved.</p>
+</footer>
+
+</body>
+</html>

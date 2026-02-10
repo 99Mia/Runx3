@@ -1,0 +1,275 @@
+/* 전체 초기화 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Noto Sans KR", system-ui, sans-serif;
+    color: #222;
+    background: #fff;
+}
+
+/* 페이지 컨테이너 */
+.signup-container {
+    max-width: 520px;
+    margin: 72px auto 40px; /* ⬅ 상단 여백 넉넉하게 확보 */
+    padding: 0 16px;
+    font-size: 17px;
+    line-height: 1.6;
+}
+
+/* 제목 */
+.signup-container h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+/* 🔹 소셜 로그인 버튼 영역 */
+.social-buttons {
+    display: flex;
+    flex-direction: column; /* 세로 배치 고정 */
+    gap: 12px;
+}
+
+.social-buttons a {
+    display: block;
+    text-align: center;
+    font-size: 18px;
+    font-weight: 600;
+    padding: 14px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: background 0.15s ease, filter 0.15s ease;
+}
+
+/* 소셜 버튼 개별 색상 */
+.google-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #bbb;
+}
+.google-btn:hover { background: #f7f7f7; }
+
+.naver-btn {
+    background: #03C75A;
+    color: #fff;
+}
+.naver-btn:hover { filter: brightness(0.95); }
+
+.kakao-btn {
+    background: #FEE500;
+    color: #3C1E1E;
+}
+.kakao-btn:hover { filter: brightness(0.95); }
+
+/* 🔹 구분선 */
+.divider {
+    margin: 28px 0;
+    position: relative;
+    text-align: center;
+    font-size: 16px;
+    color: #777;
+}
+.divider::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 1px;
+    background: #ddd;
+}
+.divider span {
+    background: #fff;
+    padding: 0 12px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 🔹 입력 폼 */
+.form-group { margin-bottom: 16px; }
+label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 16px; }
+
+.signup-container input[type="email"],
+.signup-container input[type="text"],
+.signup-container input[type="password"] {
+    width: 100%;
+    height: 44px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0 12px;
+    font-size: 17px;
+    outline: none;
+}
+
+.inline-row {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+}
+.inline-row input { flex: 1; }
+
+/* 🔹 버튼 스타일 */
+.primary-btn,
+.outline-btn {
+    display: inline-block;
+    height: 45px;
+    padding: 0 14px;
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.primary-btn {
+    width: 100%;
+    background: #6c757d;
+    color: #fff;
+}
+.primary-btn:not([disabled]) { background: #007bff; }
+.primary-btn:not([disabled]):hover { filter: brightness(0.95); }
+.primary-btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+.outline-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+}
+.outline-btn:hover { filter: brightness(0.97); }
+
+/* 🔹 체크박스 */
+.form-checks {
+    margin: 10px 0 18px;
+}
+.form-checks label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-weight: 500;
+}
+.form-checks input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+}
+
+/* 🔹 안내문구 */
+.form-help { font-size: 16px; color: #666; }
+.error-text { color: #dc3545; margin-top: 8px; }
+
+/* 🔹 로그인 링크 */
+.login-link {
+    text-align: center;
+    margin-top: 16px;
+}
+.login-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 700;
+}
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+.social-buttons a.google-btn { border: 2px solid #bbb; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+.social-buttons a.google-btn:hover { border-color: #777; }
+
+/* 약관 영역 (스크롤만 있는 버전) */
+.agreements {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 10px 0 20px;
+}
+
+.agreement-card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin: 6px 0 8px;
+}
+
+.agreement-body {
+    max-height: 120px;  /* 스크롤 높이 */
+    overflow-y: auto;
+    background: #fafafa;
+    border: 1px solid #e3e6ea;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+}
+
+/* 스크롤바 디자인 */
+.agreement-body::-webkit-scrollbar { width: 8px; }
+.agreement-body::-webkit-scrollbar-thumb {
+    background: #d1d5da;
+    border-radius: 8px;
+}
+.agreement-body::-webkit-scrollbar-track {
+    background: #f3f4f6;
+}
+
+
+/* 1) 키보드 접근성: 포커스 링 명확화 */
+:focus-visible {
+    outline: 3px solid #80bdff;
+    outline-offset: 2px;
+}
+.social-buttons a:focus-visible,
+.primary-btn:focus-visible,
+.outline-btn:focus-visible,
+.inline-row input:focus-visible {
+    box-shadow: 0 0 0 3px rgba(0,123,255,.25);
+}
+
+/* 2) 입력 상태 피드백 (에러/유효) */
+input[aria-invalid="true"],
+input:invalid:focus {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 0 3px rgba(220,53,69,.15);
+}
+input.valid,
+input:valid:focus {
+    border-color: #28a745;
+    box-shadow: 0 0 0 3px rgba(40,167,69,.15);
+}
+
+/* 3) iOS 줌 방지 & 탭 하이라이트 제거 */
+input, button {
+    font-size: 16px; /* iOS 15 이하 줌 방지 */
+}
+* { -webkit-tap-highlight-color: transparent; }
+
+/* 4) 크롬/엣지 자동완성(노란 배경) 정리 */
+input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
+    box-shadow: 0 0 0 1000px #fff inset;
+    -webkit-text-fill-color: #222;
+}
+
+/* 5) 레이아웃 보정 */
+.inline-row .outline-btn { min-width: 92px; } /* 중복확인 버튼 폭 고정 */
+.social-buttons a { line-height: 1; }         /* 버튼 높이 균일화 */
+.signup-container input[type="email"],
+.signup-container input[type="text"],
+.signup-container input[type="password"] {
+    transition: border-color .15s ease, box-shadow .15s ease;
+}
+
+/* (선택) 모바일 여백 살짝 타이트하게 */
+@media (max-width: 420px) {
+    .signup-container { margin: 56px auto 28px; } /* ⬅ 모바일에서도 상단 여백 유지 */
+    .social-buttons a { font-size: 17px; padding: 12px 0; }
+}
+
+/* 회원가입 페이지 상단 여백 강제 */
+.signup-page {
+    padding-top: 10px !important;   /* 필요하면 80px, 100px 조절 가능 */
+}

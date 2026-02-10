@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>RunTogether 프리미엄 구독</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+<header class="bg-white shadow-md p-4 flex justify-between items-center">
+    <h1 class="text-2xl font-bold text-green-700">RunTogether</h1>
+    <a href="/user/mypage?tab=subscription" class="text-gray-700 hover:text-green-600 text-sm">마이페이지로 돌아가기</a>
+</header>
+
+<main class="flex-1 flex flex-col items-center justify-center space-y-8 py-10">
+    <h2 class="text-3xl font-extrabold text-green-700">프리미엄 구독 ₩9,900</h2>
+    <button id="payBtn"
+            class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-all">
+        💳 PortOne 테스트 결제로 구독 시작하기
+    </button>
+</main>
+
+<footer class="bg-gray-900 text-gray-300 py-6 text-center text-sm">
+    © 2025 RunTogether
+</footer>
+
+<!-- PortOne SDK -->
+<script src="https://cdn.iamport.kr/v1/iamport.js"></script>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    const userId = /*[[${userId}]]*/ '0';
+
+    document.addEventListener("DOMContentLoaded", function () {
+        IMP.init("imp19424728"); // ✅ PortOne 테스트 가맹점 코드
+        console.log("IMP.init 성공!");
+
+        const btn = document.getElementById("payBtn");
+        btn.addEventListener("click", function () {
+            const merchantUid = "run_" + new Date().getTime();
+
+            IMP.request_pay({
+                pg: "html5_inicis.INIpayTest",  // ✅ 자동 승인 테스트용
+                pay_method: "vbank",            // ✅ 가상계좌 (입금 없이 성공 처리)
+                merchant_uid: merchantUid,
+                name: "RunTogether 프리미엄 구독",
+                amount: 100,
+                buyer_email: "test@run.com",
+                buyer_name: "테스터",
+                buyer_tel: "010-0000-0000"
+            }, function (rsp) {
+                if (rsp.success) {
+                    // ✅ 결제 성공 시, success 페이지로 이동 (서버에서 구독 처리)
+                    location.href = `/subscription/success`
+                        + `?imp_uid=${rsp.imp_uid}`
+                        + `&merchant_uid=${rsp.merchant_uid}`
+                        + `&amount=${rsp.paid_amount}`
+                        + `&userId=${userId}`;
+                } else {
+                    // ❌ 결제 실패 시 fail 페이지로 이동
+                    location.href = `/subscription/fail?msg=${encodeURIComponent(rsp.error_msg)}`;
+                }
+            });
+        });
+    });
+    /*]]>*/
+</script>
+</script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+
+<div layout:fragment="content">
+
+    <!-- RunWave 공통 컨테이너 -->
+    <main class="container rw-form-page">
+
+        <!-- 페이지 헤더 -->
+        <header class="rw-header">
+            <div class="rw-header__inner">
+                <h1 class="rw-title">업로드 완료</h1>
+            </div>
+        </header>
+
+        <!-- 본문 카드 -->
+        <section class="rw-card rw-form-card">
+
+            <!-- 업로드된 글 정보 -->
+            <div class="rw-form-group">
+                <label class="rw-form-label">제목</label>
+                <div class="rw-form-value">[[${boardDTO.title}]]</div>
+            </div>
+
+            <div class="rw-form-group">
+                <label class="rw-form-label">내용</label>
+                <div class="rw-form-value">[[${boardDTO.content}]]</div>
+            </div>
+
+            <div class="rw-form-group">
+                <label class="rw-form-label">작성자</label>
+                <div class="rw-form-value">[[${boardDTO.username}]]</div>
+            </div>
+
+            <!-- 업로드된 파일 출력 -->
+            <div class="rw-form-group" th:if="${fileList != null && fileList.size() > 0}">
+                <label class="rw-form-label">업로드된 파일</label>
+
+                <div class="rw-upload-list">
+
+                    <div class="rw-upload-item" th:each="fileDTO : ${fileList}">
+
+                        <!-- 이미지 파일일 경우 -->
+                        <div th:if="${fileDTO.image}" class="rw-upload-thumb">
+                            <img th:src="|/upload/view/s_${fileDTO.uuid}_${fileDTO.filename}|"
+                                 class="rw-upload-img">
+                            <a th:href="|@{/board/removeFile(filename=s_${fileDTO.uuid}_${fileDTO.filename})}|"
+                               class="rw-btn rw-btn--danger rw-btn--xs">삭제</a>
+                        </div>
+
+                        <!-- 이미지가 아닌 경우 -->
+                        <div th:unless="${fileDTO.image}" class="rw-upload-file">
+                            <span class="rw-file-name">[[${fileDTO.getLink()}]]</span>
+                            <a th:href="|@{/board/removeFile(filename=${fileDTO.getLink()})}|"
+                               class="rw-btn rw-btn--danger rw-btn--xs">삭제</a>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="rw-form-actions">
+                <a th:href="@{/board/list}" class="rw-btn rw-btn--primary">목록으로</a>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>

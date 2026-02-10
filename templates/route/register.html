@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{route/layout.html}">
+
+<!-- 페이지 전용 CSS (코스 리스트랑 같은 스타일 사용) -->
+<th:block layout:fragment="pageStyles">
+    <link rel="stylesheet" th:href="@{/css/route.css}">
+</th:block>
+
+<div layout:fragment="content">
+
+    <!-- ⭐ 페이지 폭/여백 컨테이너 -->
+    <div class="route-page-container">
+
+        <!-- ⭐ 타이틀 영역 (라운드 카드 밖) -->
+        <header class="route-title-bar">
+            <h2 class="route-page-title">코스 등록하기</h2>
+            <p class="route-page-sub">
+                지도를 클릭해 러닝 코스를 그리고, 기록을 함께 저장해 보세요.
+            </p>
+        </header>
+
+        <!-- ⭐ 라운드 카드 박스 -->
+        <div class="card">
+            <div class="card-body route-register-body">
+
+                <!-- (안쪽 카드 타이틀은 제거하거나 필요하면 작은 캡션으로만 사용)
+                <div class="card-title">코스 등록하기</div>
+                -->
+
+                <!-- 검색툴 -->
+                <form id="searchForm">
+                    <div class="input-group mb-3">
+                        <input type="text" id="searchPlace" class="form-control" placeholder="장소, 주소 검색">
+                        <button class="btn btn-outline-secondary" type="submit">검색</button>
+                    </div>
+                </form>
+
+                <!-- 지도 불러오기 -->
+                <div id="map" style="width:100%;height:350px;"></div>
+                <p class="text-muted small mt-2">
+                    <em>지도를 마우스로 클릭하면 선 그리기가 시작되고, 오른쪽 마우스를 클릭하면 선 그리기가 종료됩니다.</em>
+                </p>
+
+                <form action="/route/register" method="post">
+                    <!--전송할 map data-->
+                    <input type="hidden" name="distance" id="mapDistance">
+                    <input type="hidden" name="lat" id="mapLat">
+                    <input type="hidden" name="lng" id="mapLng">
+                    <input type="hidden" name="address" id="mapAddress">
+                    <input type="hidden" name="routePath" id="routePath">
+                    <input type="hidden" name="email" th:value="'abc@naver.com'">
+                    <input type="hidden" id="dataInput" name="difficulty" value="">
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">제목</label>
+                        <input type="text" name="title" class="form-control" placeholder="제목을 입력하세요.">
+                    </div>
+
+                    <div class="mb-3 d-flex align-items-start gap-3 flex-wrap">
+                        <label class="form-label">난이도</label>
+                        <div class="btn-group" role="group" aria-label="난이도 선택">
+                            <!--버튼 클릭 시 JS 함수 호출-->
+                            <button type="button" onclick="setAndSubmit('HARD', this)" class="btn btn-outline-success">상</button>
+                            <button type="button" onclick="setAndSubmit('MEDIUM', this)" class="btn btn-outline-success">중</button>
+                            <button type="button" onclick="setAndSubmit('EASY', this)" class="btn btn-outline-success">하</button>
+                        </div>
+                    </div>
+
+                    <!-- Duration (시/분/초) 한 줄 배치 -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12"><label class="form-label fw-semibold">달린 시간</label></div>
+                        <div class="col-12 col-sm-4">
+                            <div class="input-group">
+                                <input type="text" name="durationHr" class="form-control">
+                                <span class="input-group-text">시</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="input-group">
+                                <input type="text" name="durationMin" class="form-control">
+                                <span class="input-group-text">분</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-4">
+                            <div class="input-group">
+                                <input type="text" name="durationS" class="form-control">
+                                <span class="input-group-text">초</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Heart Rate -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold">평균 심박수</label>
+                            <div class="input-group">
+                                <input type="text" name="heartRateAvg" class="form-control">
+                                <span class="input-group-text">BPM</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="form-label fw-semibold">최대 심박수</label>
+                            <div class="input-group">
+                                <input type="text" name="heartRateMax" class="form-control">
+                                <span class="input-group-text">BPM</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">메모</label>
+                        <textarea name="description" class="form-control" rows="3"
+                                  placeholder="오늘 달릴 때 기분은 어땠나요? 작은 발자국이 모여 큰 걸음이 됩니다. 작은 기록을 모아 나의 러닝을 완성해보세요."></textarea>
+                    </div>
+
+                    <div class="mb-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="reset" class="btn btn-secondary">Reset</button>
+                        <a th:href="@{/route/list}" class="btn btn-info">
+                            목록
+                        </a>
+                    </div>
+                </form>
+
+            </div><!-- /.card-body -->
+        </div><!-- /.card -->
+    </div><!-- /.route-page-container -->
+</div><!-- /layout:fragment="content" -->
+<script layout:fragment="script" th:inline="javascript">
+    function setAndSubmit(value, btn) {
+        // 'dataInput'이라는 이름의 숨겨진 입력란에 값 설정
+        document.getElementById('dataInput').value = value;
+
+        // 모든 버튼에서 active 제거
+        var buttons = document.querySelectorAll('.btn.btn-outline-success');
+        buttons.forEach(b => b.classList.remove('active'));
+
+        // 클릭한 버튼에만 active 추가
+        btn.classList.add('active');
+    }
+
+    var mapContainer = document.getElementById('map'), // 지도를 표시할 div
+    mapOption = {
+        center: new kakao.maps.LatLng(37.566826, 126.9786567), // 지도의 중심좌표
+        level: 4 // 지도의 확대 레벨
+    };
+
+    var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+    var ps = new kakao.maps.services.Places(); // 장소 검색 객체를 생성합니다
+    var drawingFlag = false; // 선이 그려지고 있는 상태를 가지고 있을 변수입니다
+    var moveLine; // 선이 그려지고 있을때 마우스 움직임에 따라 그려질 선 객체 입니다
+    var clickLine // 마우스로 클릭한 좌표로 그려질 선 객체입니다
+    var distanceOverlay; // 선의 거리정보를 표시할 커스텀오버레이 입니다
+    var dots = []; // 선이 그려지고 있을때 클릭할 때마다 클릭 지점과 거리를 표시하는 커스텀 오버레이 배열입니다.
+    var geocoder = new kakao.maps.services.Geocoder();
+
+
+    // 지도에 클릭 이벤트를 등록합니다
+    // 지도를 클릭하면 선 그리기가 시작됩니다 그려진 선이 있으면 지우고 다시 그립니다
+    kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+
+      // 마우스로 클릭한 위치입니다
+      var clickPosition = mouseEvent.latLng;
+
+      // 지도 클릭이벤트가 발생했는데 선을 그리고있는 상태가 아니면
+      if (!drawingFlag) {
+
+        // 상태를 true로, 선이 그리고있는 상태로 변경합니다
+        drawingFlag = true;
+
+        // 지도 위에 선이 표시되고 있다면 지도에서 제거합니다
+        deleteClickLine();
+
+        // 지도 위에 커스텀오버레이가 표시되고 있다면 지도에서 제거합니다
+        deleteDistnce();
+
+        // 지도 위에 선을 그리기 위해 클릭한 지점과 해당 지점의 거리정보가 표시되고 있다면 지도에서 제거합니다
+        deleteCircleDot();
+
+        // 클릭한 위치를 기준으로 선을 생성하고 지도위에 표시합니다
+        clickLine = new kakao.maps.Polyline({
+            map: map, // 선을 표시할 지도입니다
+            path: [clickPosition], // 선을 구성하는 좌표 배열입니다 클릭한 위치를 넣어줍니다
+            strokeWeight: 3, // 선의 두께입니다
+            strokeColor: '#db4040', // 선의 색깔입니다
+            strokeOpacity: 1, // 선의 불투명도입니다 0에서 1 사이값이며 0에 가까울수록 투명합니다
+            strokeStyle: 'solid' // 선의 스타일입니다
+        });
+
+        // 선이 그려지고 있을 때 마우스 움직임에 따라 선이 그려질 위치를 표시할 선을 생성합니다
+        moveLine = new kakao.maps.Polyline({
+            strokeWeight: 3, // 선의 두께입니다
+            strokeColor: '#db4040', // 선의 색깔입니다
+            strokeOpacity: 0.5, // 선의 불투명도입니다 0에서 1 사이값이며 0에 가까울수록 투명합니다
+            strokeStyle: 'solid' // 선의 스타일입니다
+        });
+
+        // 클릭한 지점에 대한 정보를 지도에 표시합니다
+        displayCircleDot(clickPosition, 0);
+
+      } else { // 선이 그려지고 있는 상태이면
+
+        // 그려지고 있는 선의 좌표 배열을 얻어옵니다
+        var path = clickLine.getPath();
+
+        // 좌표 배열에 클릭한 위치를 추가합니다
+        path.push(clickPosition);
+
+        // 다시 선에 좌표 배열을 설정하여 클릭 위치까지 선을 그리도록 설정합니다
+        clickLine.setPath(path);
+
+        var distance = Math.round(clickLine.getLength());
+        displayCircleDot(clickPosition, distance);
+      }
+    });
+
+
+    // 지도에 마우스무브 이벤트를 등록합니다
+    // 선을 그리고있는 상태에서 마우스무브 이벤트가 발생하면 그려질 선의 위치를 동적으로 보여주도록 합니다
+    kakao.maps.event.addListener(map, 'mousemove', function (mouseEvent) {
+
+      // 지도 마우스무브 이벤트가 발생했는데 선을 그리고있는 상태이면
+      if (drawingFlag){
+
+        // 마우스 커서의 현재 위치를 얻어옵니다
+        var mousePosition = mouseEvent.latLng;
+
+        // 마우스 클릭으로 그려진 선의 좌표 배열을 얻어옵니다
+        var path = clickLine.getPath();
+
+        // 마우스 클릭으로 그려진 마지막 좌표와 마우스 커서 위치의 좌표로 선을 표시합니다
+        var movepath = [path[path.length-1], mousePosition];
+        moveLine.setPath(movepath);
+        moveLine.setMap(map);
+
+        var distance = Math.round(clickLine.getLength() + moveLine.getLength()), // 선의 총 거리를 계산합니다
+            content = '<div class="dotOverlay distanceInfo">총거리 <span class="number">' + distance + '</span>m</div>'; // 커스텀오버레이에 추가될 내용입니다
+            // console.log(clickLine.getLength() + moveLine.getLength())
+        // 거리정보를 지도에 표시합니다
+        showDistance(content, mousePosition);
+      }
+    });
+
+
+    var totalDistanceValue=0, lastLat=null, lastLng=null, lastAddress="";
+    // 지도에 마우스 오른쪽 클릭 이벤트를 등록합니다
+    // 선을 그리고있는 상태에서 마우스 오른쪽 클릭 이벤트가 발생하면 선 그리기를 종료합니다
+    kakao.maps.event.addListener(map, 'rightclick', function (mouseEvent) {
+
+      // 지도 오른쪽 클릭 이벤트가 발생했는데 선을 그리고있는 상태이면
+      if (drawingFlag) {
+
+        // 마우스무브로 그려진 선은 지도에서 제거합니다
+        moveLine.setMap(null);
+        moveLine = null;
+
+        // 마우스 클릭으로 그린 선의 좌표 배열을 얻어옵니다
+        var path = clickLine.getPath();
+
+        // 선을 구성하는 좌표의 개수가 2개 이상이면
+        if (path.length > 1) {
+
+            // kakao.maps.LatLng[] -> [{lat, lng}, ...] 로 변환
+            var pathArr = path.map(p => ({ lat: p.getLat(), lng: p.getLng() }));
+            // 숨은 필드에 JSON 문자열로 넣기
+            document.getElementById('routePath').value = JSON.stringify(pathArr);
+
+            // 마지막 클릭 지점에 대한 거리 정보 커스텀 오버레이를 지웁니다
+            if (dots[dots.length-1].distance) {
+                dots[dots.length-1].distance.setMap(null);
+                dots[dots.length-1].distance = null;
+            }
+
+            totalDistanceValue = Math.round(clickLine.getLength()); // 선의 총 거리를 계산합니다
+
+            // 마지막 클릭 지점 좌표 (kakao.maps.LatLng)
+            var lastLatLng = path[path.length - 1];
+            lastLat = lastLatLng.getLat();
+            lastLng = lastLatLng.getLng();
+
+
+            // 좌표 -> 주소 변환 (coord2Address 사용)
+            geocoder.coord2Address(lastLng, lastLat, function(result, status) {
+                if (status === kakao.maps.services.Status.OK) {
+                    // result 배열의 첫 항목에 주소 정보가 있음
+                    lastAddress = result[0].address ? result[0].address.address_name : '';
+
+                    console.log("위도:", lastLat);
+                    console.log("경도:", lastLng);
+                    console.log("변환된 주소:", lastAddress);
+                    console.log("총거리 저장됨: ", totalDistanceValue);
+
+                    document.getElementById('mapDistance').value = totalDistanceValue;
+                    document.getElementById('mapLat').value = lastLat;
+                    document.getElementById('mapLng').value = lastLng;
+                    document.getElementById('mapAddress').value = lastAddress;
+
+                    // 서버로 전송 (fetch)
+                    // var payload = {
+                    //     distance: totalDistanceValue,
+                    //     address: address,
+                    //     lat: lat,
+                    //     lng: lng
+                    // };
+
+                    // fetch('/route/saveMapData', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json'
+                    //     },
+                    //     body: JSON.stringify(payload)
+                    // })
+                    // .then(res => {
+                    // if(!res.ok) throw new Error('서버 응답 에러: ' + res.status);
+                    // return res.json();
+                    // })
+                    // .then(data => {
+                    // console.log('서버 저장 완료', data);
+                    // })
+                    // .catch(err => console.error('저장 중 오류:', err));
+
+                }else{
+                    console.warn("주소 변환 실패:", status);
+                }
+            });
+
+
+            content = getTimeHTML(totalDistanceValue); // 커스텀오버레이에 추가될 내용입니다
+            showDistance(content, path[path.length-1]); // 그려진 선의 거리정보를 지도에 표시합니다
+
+        } else {
+            // 선을 구성하는 좌표의 개수가 1개 이하이면
+            // 지도에 표시되고 있는 선과 정보들을 지도에서 제거합니다.
+            deleteClickLine();
+            deleteCircleDot();
+            deleteDistnce();
+        }
+
+        // 상태를 false로, 그리지 않고 있는 상태로 변경합니다
+        drawingFlag = false;
+      }
+    });
+
+
+
+    // 클릭으로 그려진 선을 지도에서 제거하는 함수입니다
+    function deleteClickLine() {
+        if (clickLine) {
+            clickLine.setMap(null);
+            clickLine = null;
+        }
+    }
+
+    // 마우스 드래그로 그려지고 있는 선의 총거리 정보를 표시하거
+    // 마우스 오른쪽 클릭으로 선 그리가 종료됐을 때 선의 정보를 표시하는 커스텀 오버레이를 생성하고 지도에 표시하는 함수입니다
+    function showDistance(content, position) {
+
+        if (distanceOverlay) { // 커스텀오버레이가 생성된 상태이면
+
+            // 커스텀 오버레이의 위치와 표시할 내용을 설정합니다
+            distanceOverlay.setPosition(position);
+            distanceOverlay.setContent(content);
+
+        } else { // 커스텀 오버레이가 생성되지 않은 상태이면
+
+            // 커스텀 오버레이를 생성하고 지도에 표시합니다
+            distanceOverlay = new kakao.maps.CustomOverlay({
+                map: map, // 커스텀오버레이를 표시할 지도입니다
+                content: content,  // 커스텀오버레이에 표시할 내용입니다
+                position: position, // 커스텀오버레이를 표시할 위치입니다.
+                xAnchor: 0,
+                yAnchor: 0,
+                zIndex: 3
+            });
+        }
+    }
+
+    // 그려지고 있는 선의 총거리 정보와
+    // 선 그리가 종료됐을 때 선의 정보를 표시하는 커스텀 오버레이를 삭제하는 함수입니다
+    function deleteDistnce () {
+        if (distanceOverlay) {
+            distanceOverlay.setMap(null);
+            distanceOverlay = null;
+        }
+    }
+
+    // 선이 그려지고 있는 상태일 때 지도를 클릭하면 호출하여
+    // 클릭 지점에 대한 정보 (동그라미와 클릭 지점까지의 총거리)를 표출하는 함수입니다
+    function displayCircleDot(position, distance) {
+
+        // 클릭 지점을 표시할 빨간 동그라미 커스텀오버레이를 생성합니다
+        var circleOverlay = new kakao.maps.CustomOverlay({
+            content: '<span class="dot"></span>',
+            position: position,
+            zIndex: 1
+        });
+
+        // 지도에 표시합니다
+        circleOverlay.setMap(map);
+
+        if (distance > 0) {
+            // 클릭한 지점까지의 그려진 선의 총 거리를 표시할 커스텀 오버레이를 생성합니다
+            var distanceOverlay = new kakao.maps.CustomOverlay({
+                content: '<div class="dotOverlay">거리 <span class="number">' + distance + '</span>m</div>',
+                position: position,
+                yAnchor: 1,
+                zIndex: 2
+            });
+
+            // 지도에 표시합니다
+            distanceOverlay.setMap(map);
+        }
+
+        // 배열에 추가합니다
+        dots.push({circle:circleOverlay, distance: distanceOverlay});
+    }
+
+    // 클릭 지점에 대한 정보 (동그라미와 클릭 지점까지의 총거리)를 지도에서 모두 제거하는 함수입니다
+    function deleteCircleDot() {
+        var i;
+
+        for ( i = 0; i < dots.length; i++ ){
+            if (dots[i].circle) {
+                dots[i].circle.setMap(null);
+            }
+
+            if (dots[i].distance) {
+                dots[i].distance.setMap(null);
+            }
+        }
+
+        dots = [];
+    }
+
+    // 마우스 우클릭 하여 선 그리기가 종료됐을 때 호출하여
+    // 그려진 선의 총거리 정보를
+    // HTML Content를 만들어 리턴하는 함수입니다
+    function getTimeHTML(distance) {
+        // 거리와 도보 시간, 자전거 시간을 가지고 HTML Content를 만들어 리턴합니다
+        var content = '<ul class="dotOverlay distanceInfo">';
+        content += '    <li>';
+        content += '        <span class="label">총거리</span><span class="number">' + distance + '</span>m';
+        content += '    </li>';
+        content += '</ul>'
+        return content;
+    }
+
+
+    // 검색 폼 이벤트 연결
+    document.getElementById('searchForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var keyword = document.getElementById('searchPlace').value;
+      if (!keyword.trim()) {
+        alert('검색어를 입력하세요!');
+        return;
+      }
+
+      // 키워드로 장소를 검색합니다
+      ps.keywordSearch(keyword, placesSearchCB);
+    });
+
+
+    // 키워드 검색 완료 시 호출되는 콜백함수 입니다
+    function placesSearchCB (data, status, pagination) {
+        if (status === kakao.maps.services.Status.OK) {
+
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정하기위해
+            // LatLngBounds 객체에 좌표를 추가합니다
+            var bounds = new kakao.maps.LatLngBounds();
+
+            for (var i=0; i<data.length; i++) {
+                bounds.extend(new kakao.maps.LatLng(data[i].y, data[i].x));
+            }
+
+            // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
+            map.setBounds(bounds);
+
+            var center = map.getCenter();
+            var centerCoords = {
+              lat: center.getLat(),
+              lng: center.getLng()
+            };
+            console.log("지도 중심좌표 저장됨:", centerCoords)
+
+        }
+    }
+</script>

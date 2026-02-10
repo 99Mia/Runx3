@@ -1,0 +1,116 @@
+<div th:fragment="content"
+     class="backdrop-blur-lg bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-xl p-8 border border-gray-200/60 dark:border-gray-700/50 transition-all duration-300">
+
+    <!-- 헤더 -->
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-3xl font-extrabold text-gray-900 dark:text-gray-100">회원 관리</h3>
+
+        <!-- 관리자 포함 토글 -->
+        <a th:href="@{/admin/users(page=${users.number}, search=${search}, includeAdmin=${!includeAdmin})}"
+           class="inline-flex items-center space-x-2 text-sm text-indigo-600 hover:text-indigo-800 cursor-pointer">
+            <input type="checkbox" class="form-checkbox pointer-events-none"
+                   th:checked="${includeAdmin}">
+            <span>관리자 포함</span>
+        </a>
+    </div>
+
+    <!-- 검색 -->
+    <form th:action="@{/admin/users}" method="get" class="relative mb-6">
+        <input type="text" name="search" th:value="${search}" placeholder="이메일 또는 닉네임 검색..."
+               class="w-full pl-12 pr-4 py-3 text-sm rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all">
+        <i class="ti ti-search absolute left-3.5 top-1/2 transform -translate-y-1/2 text-gray-400 text-lg"></i>
+        <input type="hidden" name="includeAdmin" th:value="${includeAdmin}">
+    </form>
+
+    <!-- 회원 목록 -->
+    <div th:if="${users != null and users.hasContent()}" class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">이메일</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">닉네임</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">권한</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">상태</th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">액션</th>
+            </tr>
+            </thead>
+
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr th:each="user : ${users.content}">
+                <td class="px-6 py-4 whitespace-nowrap" th:text="${user.email}">email@example.com</td>
+                <td class="px-6 py-4 whitespace-nowrap" th:text="${user.nickname}">닉네임</td>
+                <td class="px-6 py-4 whitespace-nowrap" th:text="${user.role}">USER</td>
+
+                <!-- 상태 -->
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span th:if="${user.deleted}" class="text-red-600 font-medium">탈퇴됨</span>
+                    <span th:elif="${!user.enabled}" class="text-orange-600">비활성</span>
+                    <span th:else class="text-green-600">활성</span>
+                </td>
+
+                <!-- 액션 -->
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div class="flex justify-end gap-2 text-xs">
+
+                        <!-- 활성 → 비활성 -->
+                        <form th:if="${user.enabled and !user.deleted and user.role != 'ADMIN'}"
+                              th:action="@{/admin/users/{id}/disable(id=${user.userId})}"
+                              method="post" class="inline">
+                            <button type="submit"
+                                    class="text-orange-600 hover:text-orange-800 transition">비활성</button>
+                        </form>
+
+                        <!-- 비활성 → 활성화 -->
+                        <form th:if="${!user.enabled and !user.deleted and user.role != 'ADMIN'}"
+                              th:action="@{/admin/users/{id}/enable(id=${user.userId})}"
+                              method="post" class="inline">
+                            <button type="submit"
+                                    class="text-green-600 hover:text-green-800 transition">활성화</button>
+                        </form>
+
+                        <!-- 탈퇴 -->
+                        <form th:if="${!user.deleted and user.role != 'ADMIN'}"
+                              th:action="@{/admin/users/{id}/delete(id=${user.userId})}"
+                              method="post"
+                              class="inline"
+                              onsubmit="return confirm('정말 탈퇴시키겠습니까?\n복구 불가능합니다.')">
+                            <button type="submit"
+                                    class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 font-medium">
+                                탈퇴
+                            </button>
+                        </form>
+
+                        <!-- 탈퇴 완료 -->
+                        <span th:if="${user.deleted}" class="text-red-600 font-medium text-xs">탈퇴됨</span>
+
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- 페이지네이션 -->
+        <div class="flex justify-center mt-6" th:if="${users.totalPages > 1}">
+            <nav class="flex space-x-1">
+                <a th:if="${!users.first}"
+                   th:href="@{/admin/users(page=${users.number - 1}, search=${search}, includeAdmin=${includeAdmin})}"
+                   class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">이전</a>
+
+                <a th:each="i : ${#numbers.sequence(0, users.totalPages - 1)}"
+                   th:href="@{/admin/users(page=${i}, search=${search}, includeAdmin=${includeAdmin})}"
+                   th:text="${i + 1}"
+                   th:classappend="${i == users.number} ? 'bg-indigo-600 text-white' : ''"
+                   class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700"></a>
+
+                <a th:if="${!users.last}"
+                   th:href="@{/admin/users(page=${users.number + 1}, search=${search}, includeAdmin=${includeAdmin})}"
+                   class="px-3 py-1 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">다음</a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- 빈 목록 -->
+    <div th:if="${users == null or !users.hasContent()}" class="text-center py-20 text-gray-500 dark:text-gray-400">
+        <p>등록된 회원이 없습니다.</p>
+    </div>
+</div>

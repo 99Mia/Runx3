@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>결제 성공 | Runx3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background: #F6F7F9;
+            font-family: "Inter", sans-serif;
+        }
+
+        /* Apple 스타일 고정 헤더 */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            transition: 0.25s;
+        }
+
+        header.scrolled {
+            background: rgba(255,255,255,0.95);
+        }
+
+        /* White Card */
+        .white-card {
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col">
+
+<!-- HEADER -->
+<header id="header">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+
+        <a href="/" class="flex items-center gap-2">
+            <img src="/images/log01.png" class="h-10">
+            <span class="text-2xl font-extrabold">Runx3</span>
+        </a>
+
+        <nav class="hidden md:flex gap-8 text-sm text-gray-700 font-medium">
+            <a href="/route/list" class="hover:text-black">코스안내</a>
+            <a href="/challenges" class="hover:text-black">대회소식</a>
+            <a href="/board/list" class="hover:text-black">커뮤니티</a>
+            <a href="/user/mypage" class="hover:text-black font-semibold">마이페이지</a>
+        </nav>
+    </div>
+</header>
+
+<script>
+    const header = document.getElementById("header");
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 10) header.classList.add("scrolled");
+        else header.classList.remove("scrolled");
+    });
+</script>
+
+<!-- CONTENT -->
+<main class="flex flex-col items-center justify-center flex-1 px-6">
+
+    <div class="white-card p-12 text-center max-w-md w-full">
+
+        <h1 class="text-4xl font-extrabold text-green-600 mb-4">🎉 결제 성공!</h1>
+
+        <p class="text-gray-700 text-lg mb-8 leading-relaxed">
+            Runx3 프리미엄 구독이<br>
+            <strong class="font-semibold text-black">성공적으로 활성화</strong>되었습니다.
+        </p>
+
+        <a href="/user/mypage?tab=subscription"
+           class="block w-full bg-black text-white py-3 rounded-xl text-lg font-semibold hover:bg-neutral-800 transition">
+            마이페이지로 돌아가기
+        </a>
+
+    </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="text-center text-gray-500 py-6 text-sm">
+    © 2025 Runx3. All rights reserved.
+</footer>
+
+</body>
+</html>

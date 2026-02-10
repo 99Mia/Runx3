@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title layout:title-pattern="$CONTENT_TITLE | Runx3">Runx3</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+    <th:block layout:fragment="pageStyles"></th:block>
+
+    <style>
+        /*지도에 표시되는 dot css 설정*/
+        .dot {overflow:hidden;float:left;width:12px;height:12px;background: url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/mini_circle.png');}
+        .dotOverlay {position:relative;bottom:10px;border-radius:6px;border: 1px solid #ccc;border-bottom:2px solid #ddd;float:left;font-size:12px;padding:5px;background:#fff;}
+        .dotOverlay:nth-of-type(n) {border:0; box-shadow:0px 1px 2px #888;}
+        .number {font-weight:bold;color:#ee6152;}
+        .dotOverlay:after {content:'';position:absolute;margin-left:-6px;left:50%;bottom:-8px;width:11px;height:8px;background:url('https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/vertex_white_small.png')}
+        .distanceInfo {position:relative;top:5px;left:5px;list-style:none;margin:0;}
+        .distanceInfo .label {display:inline-block;width:50px;}
+        .distanceInfo:after {content:none;}
+    </style>
+
+    <!-- ✅ Kakao Map API (지도 공통 사용) -->
+    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=bef6c0af0c16eb930b44c3b94a75c1c1&libraries=services"></script>
+</head>
+
+<body>
+
+<header id="site-header" class="header">
+    <div class="container header-inner">
+
+        <!-- 로고 -->
+        <a th:href="@{/main}" class="logo">
+            <!-- ★ 여기 로고 절대경로로 연결됨 -->
+            <img th:src="@{/images/logo01.png}" alt="Runx3" class="logo-img">
+        </a>
+
+        <nav class="nav">
+            <a th:href="@{/route/list}">코스안내</a>
+            <a th:href="@{/board/list}">커뮤니티</a>
+            <a th:href="@{/challenges}">대회소식</a>
+
+            <span class="nav-sep"></span>
+
+            <!-- 비로그인 -->
+            <a sec:authorize="isAnonymous()" th:href="@{/user/login}">로그인</a>
+            <a sec:authorize="isAnonymous()" th:href="@{/auth/signup}">회원가입</a>
+
+            <!-- 로그인 -->
+            <span sec:authorize="isAuthenticated()" class="user-welcome">
+                <a th:href="@{/user/mypage}">
+                    <i class="ri-user-smile-line"></i>
+                    <span th:text="${#authentication.name}"></span>님
+                </a>
+            </span>
+
+            <form sec:authorize="isAuthenticated()" th:action="@{/user/logout}" method="post" class="logout-form">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}"/>
+                <button type="submit" class="logout-btn">
+                    <i class="ri-logout-circle-r-line"></i>
+                </button>
+            </form>
+        </nav>
+
+    </div>
+</header>
+
+<main class="content">
+    <div layout:fragment="content"></div>
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <p>© 2025 Runx3</p>
+    </div>
+</footer>
+
+<!-- ✅ 페이지 전용 스크립트 (새 규칙) -->
+<th:block layout:fragment="pageScripts"></th:block>
+
+<!-- ✅ 페이지 전용 스크립트 (예전 layout:fragment="script"도 지원) -->
+<th:block layout:fragment="script"></th:block>
+
+<script>
+    // Apple 스타일 헤더 스크롤 효과
+    const header = document.getElementById("site-header");
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 10) header.classList.add("scrolled");
+        else header.classList.remove("scrolled");
+    });
+</script>
+
+</body>
+</html>

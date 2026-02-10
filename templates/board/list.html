@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout.html}">
+
+<head>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<div layout:fragment="content">
+
+    <main class="container board-page">
+
+        <!-- 헤더 -->
+        <header class="rw-header">
+            <div class="rw-header__inner">
+                <div class="rw-logo">
+                    <h1 class="rw-title">게시판 목록보기</h1>
+                </div>
+
+
+
+
+                <!-- 검색 폼 -->
+                <form action="/board/list" method="get" class="rw-search">
+                    <input type="hidden" name="size" th:value="${pageRequestDTO.size}">
+                    <select name="type">
+                        <option value="">----</option>
+                        <option value="t" th:selected="${pageRequestDTO.type=='t'}">제목</option>
+                        <option value="c" th:selected="${pageRequestDTO.type=='c'}">내용</option>
+                        <option value="w" th:selected="${pageRequestDTO.type=='w'}">작성자</option>
+                        <option value="tc" th:selected="${pageRequestDTO.type=='tc'}">제목+내용</option>
+                        <option value="tcw" th:selected="${pageRequestDTO.type=='tcw'}">제목+내용+작성자</option>
+                    </select>
+                    <input type="text" name="keyword" th:value="${pageRequestDTO.keyword}" placeholder="검색어를 입력하세요">
+                    <button type="submit">검색</button>
+                    <button type="button" id="sort-likes">인기순</button>
+                </form>
+            </div>
+        </header>
+
+        <!-- 게시판 테이블 -->
+        <section class="rw-card board-table-card">
+            <table class="board-table">
+                <thead>
+                <tr>
+                    <th>BoardId</th>
+                    <th>Title</th>
+                    <th>UserName</th>
+                    <th>CreatedAt</th>
+                    <th>Views</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="boardDTO : ${responseDTO.dtoList}">
+                    <td>[[${boardDTO.boardId}]]</td>
+                    <td>
+                        <a th:href="|@{/board/read(boardId=${boardDTO.boardId},mode=1)}&${pageRequestDTO.getLink()}|">
+                            [[${boardDTO.title}]]
+                        </a>
+                    </td>
+                    <td>[[${boardDTO.username}]]</td>
+                    <td th:text="${#temporals.format(boardDTO.regDate,'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <td>[[${boardDTO.views}]]</td>
+                    <td>
+                        <button type="button" class="like-btn" th:data-board-id="${boardDTO.boardId}">
+                            <i class="bi" th:classappend="${boardDTO.liked} ? 'bi-heart-fill' : 'bi-heart'"></i>
+                            <span class="like-count" th:text="${boardDTO.likeCount}">0</span>
+                        </button>
+                        <button type="button" class="bookmark-btn" th:data-board-id="${boardDTO.boardId}">
+                            <i class="bi" th:classappend="${boardDTO.bookmarked} ? 'bi-bookmark-fill' : 'bi-bookmark'"></i>
+                        </button>
+                        <button type="button" class="report-btn" th:data-board-id="${boardDTO.boardId}">
+                            <i class="bi bi-flag"></i>
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <!-- 페이지네이션 -->
+            <div class="board-pagination">
+                <ul class="pagination">
+                    <li class="page-item" th:if="${responseDTO.prev}">
+                        <a class="page-link"
+                           th:data-num="${responseDTO.start - 1 < 1 ? 1 : responseDTO.start - 1}">Prev</a>
+                    </li>
+                    <th:block th:each="i:${#numbers.sequence(responseDTO.start, responseDTO.end)}">
+                        <li th:class="${responseDTO.page==i} ? 'page-item active' : 'page-item'">
+                            <a class="page-link" th:data-num="${i}">[[${i}]]</a>
+                        </li>
+                    </th:block>
+                    <li class="page-item" th:if="${responseDTO.next}">
+                        <a class="page-link"
+                           th:data-num="${responseDTO.end + 1 > responseDTO.totalPages ? responseDTO.totalPages : responseDTO.end + 1}">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        <!-- 헤더 액션 버튼 -->
+        <div class="rw-header-actions">
+            <a href="/board/register" class="rw-btn">게시글 등록</a>
+        </div>
+    </main>
+</div>
+
+<script layout:fragment="pageScripts" th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", () => {
+        // CSRF 토큰 가져오기
+        const csrfToken = document.querySelector('meta[name="_csrf"]').content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]').content;
+
+        // 로그인된 사용자 ID (없으면 0)
+        const userId = /*[[${loginUserId}]]*/ 0;
+
+        // 좋아요 버튼
+        document.querySelectorAll(".like-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                if(userId === 0) { alert("로그인이 필요합니다."); return; }
+
+                const boardId = btn.dataset.boardId;
+                const icon = btn.querySelector("i");
+                const countSpan = btn.querySelector(".like-count");
+
+                try {
+                    const res = await fetch(`/board/like/toggle`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            [csrfHeader]: csrfToken
+                        },
+                        body: JSON.stringify({ boardId })
+                    });
+
+                    if(!res.ok) throw new Error("좋아요 요청 실패");
+                    const data = await res.json();
+
+                    // 아이콘 토글
+                    icon.classList.toggle("bi-heart");
+                    icon.classList.toggle("bi-heart-fill");
+
+                    // 좋아요 수 갱신
+                    countSpan.textContent = data.likeCount ?? 0;
+                } catch (err) {
+                    alert(err.message);
+                }
+            });
+        });
+
+        // 북마크 버튼
+        document.querySelectorAll(".bookmark-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                if(userId === 0) { alert("로그인이 필요합니다."); return; }
+
+                const boardId = btn.dataset.boardId;
+                const icon = btn.querySelector("i");
+
+                try {
+                    const res = await fetch(`/bookmark/bookmark`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            [csrfHeader]: csrfToken
+                        },
+                        body: JSON.stringify({ boardId })
+                    });
+
+                    if(!res.ok) throw new Error("북마크 요청 실패");
+                    const data = await res.json();
+
+                    // 아이콘 토글
+                    icon.classList.toggle("bi-bookmark");
+                    icon.classList.toggle("bi-bookmark-fill");
+                } catch (err) {
+                    alert(err.message);
+                }
+            });
+        });
+
+        // 신고 버튼
+        document.querySelectorAll(".report-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                if(userId === 0) { alert("로그인이 필요합니다."); return; }
+
+                const boardId = btn.dataset.boardId;
+                if(!confirm("이 게시글을 신고하시겠습니까?")) return;
+
+                try {
+                    const res = await fetch(`/board/report`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            [csrfHeader]: csrfToken
+                        },
+                        body: JSON.stringify({ boardId, reason: "부적절한 게시글" })
+                    });
+
+                    if(!res.ok) throw new Error("신고 요청 실패");
+
+                    btn.classList.remove("btn-outline-warning");
+                    btn.classList.add("btn-warning");
+                    alert("신고가 접수되었습니다.");
+                } catch (err) {
+                    alert(err.message);
+                }
+            });
+        });
+
+        // 인기순 정렬
+        const sortLikesBtn = document.getElementById("sort-likes");
+        if(sortLikesBtn){
+            sortLikesBtn.addEventListener("click", () => {
+                const form = document.querySelector("form");
+                let existing = form.querySelector("input[name='sort']");
+                if(existing) existing.remove();
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "sort";
+                input.value = "likes";
+                form.appendChild(input);
+                form.submit();
+            });
+        }
+
+        // 페이지네이션
+        const pagination = document.querySelector(".pagination");
+        const form = document.querySelector("form");
+        if(pagination && form){
+            pagination.addEventListener("click", e => {
+                e.preventDefault();
+                const target = e.target;
+                if(target.tagName!=='A') return;
+                const num = target.getAttribute("data-num");
+                let input = form.querySelector("input[name='page']");
+                if(input) input.remove();
+                input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "page";
+                input.value = num;
+                form.appendChild(input);
+                form.submit();
+            });
+        }
+    });
+</script>

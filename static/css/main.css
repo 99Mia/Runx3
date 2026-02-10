@@ -1,0 +1,171 @@
+/* GLOBAL */
+body {
+    background: #F6F7F9;
+    color: #1C1E21;
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* HERO */
+.hero {
+    height: 75vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+}
+
+.hero-inner {
+    position: relative;
+    text-align: center;
+    color: #fff;
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: 800;
+}
+
+.hero-desc {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+/* BLACK BUTTON */
+.hero-btn {
+    margin-top: 30px;
+    display: inline-block;
+    padding: 14px 40px;
+    background: #1C1E21;
+    color: #ffffff;
+    border-radius: 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: 0.25s;
+}
+
+.hero-btn:hover {
+    background: #000;
+    transform: translateY(-3px);
+}
+
+/* CARD 공통 */
+.card {
+    background: #FFFFFF;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid #E3E5E8;
+    margin-bottom: 50px;
+    margin-top: 50px;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #1C1E21;
+    margin-bottom: 20px;
+}
+
+/* Popular Courses */
+.course-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.course-item img {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 14px;
+    margin-bottom: 10px;
+}
+
+.course-item p {
+    font-size: 1rem;
+    color: #6C7077;
+}
+
+/* 🏆 Events – 다가오는 대회 일정 */
+
+/* 섹션 자체는 .card 스타일만 쓰고, 레이아웃은 event-grid가 담당 */
+.event-card {
+    /* 추가 스타일 필요 없으면 비워둬도 됨 */
+}
+
+/* 세 개 대회 카드 가로 정렬 */
+.event-grid {
+    display: flex;
+    justify-content: center;   /* 가운데 정렬 */
+    gap: 40px;                 /* 카드 사이 간격 */
+    margin-top: 10px;
+}
+
+/* 개별 대회 카드 */
+.event-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* 포스터 이미지 – 크게 + 원본 비율 유지 */
+.event-wrap img {
+    width: 260px;        /* 크기 마음에 안 들면 220~280 사이로 조절 */
+    max-width: 100%;
+    height: auto;        /* ⭐ 비율 그대로 */
+    border-radius: 12px;
+    object-fit: contain; /* 이미지 안 잘리게 */
+    margin-bottom: 12px;
+}
+
+.event-text strong {
+    color: #1C1E21;
+}
+
+.event-text {
+    font-size: 1rem;
+    color: #6C7077;
+}
+
+
+
+
+/* 후기 버튼 */
+.stack-btn {
+    display: block;
+    padding: 15px;
+    background: #FFFFFF;
+    border-radius: 14px;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #1C1E21;
+    font-size: 1rem;
+    transition: 0.2s;
+    border: 1px solid #E3E5E8;
+}
+
+.stack-btn:hover {
+    background: #F0F2F4;
+}
+
+/* 헤더 메뉴 크기 업 */
+.header-nav a {
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 0 18px;
+}
+
+.header-nav {
+    gap: 28px;
+}

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>RunTogether - 마이페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.1.0/fonts/remixicon.css" rel="stylesheet"/>
+    <style>
+        body { background: #f9fafb; font-family: 'Inter', sans-serif; }
+        .tab-active { background: #2E8B57; color: white; }
+        .tab-inactive { background: #f1f5f9; color: #374151; }
+    </style>
+</head>
+
+<body class="flex flex-col min-h-screen">
+
+<!-- ✅ 헤더 -->
+<header class="bg-white shadow-md sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
+
+        <a href="/main" class="flex items-center gap-2">
+            <img th:src="@{/images/logo01.png}"
+                 alt="RunTogether Logo"
+                 class="h-10 object-contain drop-shadow-md">
+        </a>
+
+        <nav class="hidden md:flex gap-8 font-medium">
+            <a href="/route/list" class="hover:text-green-600">코스</a>
+            <a href="/board/list" class="hover:text-green-600">커뮤니티</a>
+            <a href="/challenges" class="hover:text-green-600">대회소식</a>
+            <a href="/user/mypage" class="text-green-700 font-semibold">마이페이지</a>
+            <form th:if="${#authorization.expression('isAuthenticated()')}"
+                  th:action="@{/user/logout}" method="post" class="inline">
+                <button type="submit"
+                        class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm">
+                    로그아웃
+                </button>
+            </form>
+        </nav>
+    </div>
+</header>
+
+<!-- ✅ 본문 -->
+<main class="flex-1 max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+
+    <!-- 🧭 사이드 탭 -->
+    <aside class="md:col-span-1 bg-white shadow-md rounded-xl p-6 space-y-4">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800">마이페이지</h3>
+        <button id="tab-profile" class="w-full py-2 rounded-lg tab-active">프로필</button>
+        <button id="tab-activity" class="w-full py-2 rounded-lg tab-inactive">활동 요약</button>
+        <button id="tab-course" class="w-full py-2 rounded-lg tab-inactive">코스 기록</button>
+        <button id="tab-subscription" class="w-full py-2 rounded-lg tab-inactive">구독 정보</button>
+    </aside>
+
+    <!-- 🧾 콘텐츠 영역 -->
+    <section class="md:col-span-3 space-y-8">
+
+        <!-- ✅ 프로필 -->
+        <div id="content-profile" class="tab-content">
+            <div class="bg-white shadow-lg rounded-2xl p-10 flex flex-col gap-10 min-h-[700px] justify-center">
+                <div class="flex flex-col md:flex-row items-center justify-center gap-10">
+                    <img th:src="${user != null && user.profileImage != null ? user.profileImage : '/images/default-profile.png'}"
+                         class="w-40 h-40 rounded-full border-4 border-green-300 object-cover shadow-md">
+                    <div class="text-center md:text-left">
+                        <h2 class="text-4xl font-extrabold text-gray-800 mb-2" th:text="|${user.nickname} 님|">홍길동 님</h2>
+                        <p class="text-gray-600 text-lg leading-relaxed mb-4"
+                           th:text="${mypage.bio} ?: '오늘도 즐겁게 달려요! RunTogether와 함께🏃‍♂️'">
+                            오늘도 즐겁게 달려요! RunTogether와 함께🏃‍♂️
+                        </p>
+                        <a href="/user/profile/edit"
+                           class="inline-block bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-semibold transition-all shadow-sm hover:shadow-md">
+                            프로필 수정
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 📊 활동 요약 -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-8">
+                    <div class="bg-white rounded-xl shadow p-6 text-center border border-gray-100">
+                        <p class="text-gray-500 text-sm mb-2">총 거리</p>
+                        <p class="text-3xl font-bold text-green-600" th:text="|${mypage.activity.totalDistance} km|">0 km</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-6 text-center border border-gray-100">
+                        <p class="text-gray-500 text-sm mb-2">총 시간</p>
+                        <p class="text-3xl font-bold text-green-600" th:text="|${mypage.activity.totalTime} 분|">0 분</p>
+                    </div>
+                    <div class="bg-white rounded-xl shadow p-6 text-center border border-gray-100">
+                        <p class="text-gray-500 text-sm mb-2">평균 페이스</p>
+                        <p class="text-3xl font-bold text-green-600" th:text="|${mypage.activity.averagePace} 분/km|">0 분/km</p>
+                    </div>
+                </div>
+
+                <!-- 🏅 뱃지 -->
+                <div class="flex flex-wrap gap-4 justify-center md:justify-start mt-6">
+                    <span class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm">🏅 마라톤 초보</span>
+                    <span class="bg-green-100 text-green-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm">💪 꾸준한 러너</span>
+                    <span class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-medium shadow-sm">💬 커뮤니티 활발러</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ 활동 요약 -->
+        <div id="content-activity" class="tab-content hidden">
+            <div class="bg-white shadow-md rounded-xl p-8">
+                <h3 class="text-xl font-semibold mb-6 text-gray-800">활동 요약</h3>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
+                    <div class="bg-blue-50 p-5 rounded-xl">
+                        <p>총 거리</p>
+                        <p class="text-2xl font-bold text-blue-600" th:text="|${mypage.activity.totalDistance} km|">0 km</p>
+                    </div>
+                    <div class="bg-green-50 p-5 rounded-xl">
+                        <p>총 시간</p>
+                        <p class="text-2xl font-bold text-green-600" th:text="|${mypage.activity.totalTime} 분|">0 분</p>
+                    </div>
+                    <div class="bg-orange-50 p-5 rounded-xl">
+                        <p>평균 페이스</p>
+                        <p class="text-2xl font-bold text-orange-600" th:text="|${mypage.activity.averagePace} 분/km|">0 분/km</p>
+                    </div>
+                    <div class="bg-indigo-50 p-5 rounded-xl">
+                        <p>게시글</p>
+                        <p class="text-2xl font-bold text-indigo-600" th:text="${mypage.activity.postCount}">0</p>
+                    </div>
+                    <div class="bg-pink-50 p-5 rounded-xl">
+                        <p>댓글</p>
+                        <p class="text-2xl font-bold text-pink-600" th:text="${mypage.activity.commentCount}">0</p>
+                    </div>
+                    <div class="bg-yellow-50 p-5 rounded-xl">
+                        <p>북마크</p>
+                        <p class="text-2xl font-bold text-yellow-600" th:text="${mypage.activity.bookmarkCount}">0</p>
+                    </div>
+
+                    <!-- ✅ 월별 통계 그래프 -->
+                    <div class="col-span-full mt-12">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-6">📊 최근 6개월 활동 추이</h4>
+                        <div class="bg-gray-50 rounded-xl shadow-md p-8">
+                            <div class="relative w-full" style="height:480px;">
+                                <canvas id="activityChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script th:inline="javascript">
+                        /*<![CDATA[*/
+                        const monthlyData = JSON.parse(/*[[${monthlyStatsJson}]]*/ '[]');
+                        if (monthlyData && monthlyData.length > 0) {
+                            const labels = monthlyData.map(d => d.month);
+                            const distances = monthlyData.map(d => d.totalDistance);
+                            const posts = monthlyData.map(d => d.postCount);
+                            const comments = monthlyData.map(d => d.commentCount);
+                            const bookmarks = monthlyData.map(d => d.bookmarkCount);
+
+                            new Chart(document.getElementById("activityChart"), {
+                                type: 'line',
+                                data: {
+                                    labels: labels.reverse(),
+                                    datasets: [
+                                        { label: '총 거리 (km)', data: distances.reverse(), borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)', tension: 0.4, fill: true },
+                                        { label: '게시글 수', data: posts.reverse(), borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.4, fill: true },
+                                        { label: '댓글 수', data: comments.reverse(), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.4, fill: true },
+                                        { label: '북마크 수', data: bookmarks.reverse(), borderColor: '#ec4899', backgroundColor: 'rgba(236,72,153,0.1)', tension: 0.4, fill: true }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    maintainAspectRatio: false,
+                                    plugins: { legend: { position: 'bottom' } },
+                                    scales: {
+                                        y: { beginAtZero: true, title: { display: true, text: '활동량' } }
+                                    }
+                                }
+                            });
+                        }
+                        /*]]>*/
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!-- ✅ 코스 기록 -->
+        <div id="content-course" class="tab-content hidden">
+            <div class="bg-white shadow-md rounded-xl p-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800">나의 코스 기록</h3>
+                    <a href="/route/register"
+                       class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
+                        + 코스 등록
+                    </a>
+                </div>
+                <table class="w-full text-center border-collapse">
+                    <thead>
+                    <tr class="bg-gray-100 text-gray-700">
+                        <th class="py-3 border-b">코스명</th>
+                        <th class="py-3 border-b">거리</th>
+                        <th class="py-3 border-b">소요시간</th>
+                        <th class="py-3 border-b">완료일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="course : ${mypage.courses}" class="hover:bg-gray-50">
+                        <td th:text="${course.courseName}" class="py-3 border-b">코스 A</td>
+                        <td th:text="${course.distance}" class="py-3 border-b">10</td>
+                        <td th:text="${course.timeSpent}" class="py-3 border-b">60</td>
+                        <td th:text="${course.completedAt}" class="py-3 border-b">2025-11-05</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(mypage.courses)}">
+                        <td colspan="4" class="text-gray-500 py-6">등록된 코스가 없습니다.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ✅ 구독 정보 -->
+        <div id="content-subscription" class="tab-content hidden">
+            <div class="bg-white shadow-lg rounded-2xl p-10">
+                <h3 class="text-2xl font-bold mb-6 text-green-700 flex items-center gap-2">
+                    <i class="ri-vip-crown-line text-yellow-500 text-3xl"></i>
+                    구독 정보
+                </h3>
+                <div id="subscription-content" class="text-gray-700">
+                    <p>⏳ 구독 정보를 불러오는 중입니다...</p>
+                </div>
+            </div>
+        </div>
+
+
+    </section>
+</main>
+
+<!-- ✅ 푸터 -->
+<footer class="bg-gray-900 text-gray-300 py-8 mt-auto">
+    <div class="max-w-7xl mx-auto text-center text-sm">
+        <p>© 2025 RunTogether. All rights reserved.</p>
+    </div>
+</footer>
+
+<!-- ✅ 탭 전환 스크립트 -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    document.addEventListener("DOMContentLoaded", async function() {
+        const tabs = ['profile', 'activity', 'course', 'subscription'];
+        const userId = /*[[${user.userId}]]*/ 0;
+
+        function showTab(tab) {
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.remove('tab-active');
+                document.getElementById(`tab-${t}`).classList.add('tab-inactive');
+                document.getElementById(`content-${t}`).classList.add('hidden');
+            });
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const activeTab = params.get('tab') || 'profile';
+        showTab(activeTab);
+
+        tabs.forEach(tab => {
+            const button = document.getElementById(`tab-${tab}`);
+            if (button) {
+                button.addEventListener('click', () => {
+                    showTab(tab);
+                    const url = new URL(window.location);
+                    url.searchParams.set('tab', tab);
+                    window.history.replaceState({}, '', url);
+                });
+            }
+        });
+
+        const subContainer = document.getElementById("subscription-content");
+        try {
+            const res = await fetch(`/api/mypage/subscription/${userId}`);
+            if (!res.ok) throw new Error("구독 정보를 불러올 수 없습니다.");
+            const sub = await res.json();
+
+            if (sub.status === "ACTIVE") {
+                // ✅ 남은 기간 계산 (시작일 + 30일 - 오늘)
+                const start = new Date(sub.startedAt);
+                const expire = new Date(start);
+                expire.setDate(expire.getDate() + 30);
+                const now = new Date();
+                const remain = Math.max(0, Math.ceil((expire - now) / (1000 * 60 * 60 * 24))); // 남은 일수 계산
+                const percent = Math.min(100, (1 - remain / 30) * 100);
+                subContainer.innerHTML = `
+    <div class="bg-gradient-to-r from-green-50 to-green-100 border border-green-200 rounded-xl p-6 space-y-4 shadow-sm">
+        <div class="flex items-center justify-between">
+            <p class="text-lg font-semibold">💎 현재 플랜</p>
+            <span class="text-green-700 font-bold text-xl">${sub.plan}</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <p class="text-lg font-semibold">📅 시작일</p>
+            <span>${sub.startedAt ? sub.startedAt.split('T')[0] : '-'}</span>
+        </div>
+        <div class="flex items-center justify-between">
+            <p class="text-lg font-semibold">⏰ 남은 기간</p>
+            <span class="font-medium text-gray-800">${remain}일 남음</span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-3 mt-3">
+            <div class="bg-green-500 h-3 rounded-full transition-all" style="width: ${percent}%;"></div>
+        </div>
+
+        <div class="flex items-center justify-between pt-5 border-t border-gray-200 mt-5">
+            <span class="text-sm font-medium text-gray-600">
+                상태:
+                <span class="px-3 py-1 rounded-full text-white text-sm font-semibold
+                    ${sub.status === 'ACTIVE' ? 'bg-green-500' : 'bg-gray-400'}">
+                    ${sub.status}
+                </span>
+            </span>
+            <button id="cancelBtn"
+                class="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg font-semibold transition">
+                구독 취소
+            </button>
+        </div>
+    </div>
+`;
+
+                document.getElementById("cancelBtn").addEventListener("click", async () => {
+                    if (!confirm("정말 구독을 취소하시겠습니까?")) return;
+                    const cancelRes = await fetch(`/api/mypage/subscription/${userId}/cancel`, { method: "POST" });
+                    if (cancelRes.ok) {
+                        alert("구독이 취소되었습니다.");
+                        location.reload();
+                    } else alert("구독 취소 중 오류가 발생했습니다.");
+                });
+            } else {
+                subContainer.innerHTML = `
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center shadow-sm">
+                        <p class="text-gray-600 mb-6">현재 구독 중인 플랜이 없습니다.</p>
+                        <button id="startBtn"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold transition">
+                          💳 프리미엄 구독 시작하기
+                        </button>
+                    </div>
+                `;
+                document.getElementById("startBtn").addEventListener("click", () => {
+                    window.location.href = '/subscription/payment';
+                });
+            }
+        } catch (error) {
+            subContainer.innerHTML = `<p class="text-red-500">\${error.message}</p>`;
+        }
+    });
+    /*]]>*/
+</script>
+
+
+
+
+</body>
+</html>
