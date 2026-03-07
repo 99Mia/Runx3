@@ -11,7 +11,7 @@
 ## 구현 기능
 - 후기, 댓글, 좋아요, 북마크 CRUD
 
-## 구동 영상
+## 구현 영상
 [영상 시청하기](https://1drv.ms/v/c/9331d839a22c3178/IQAxkCZ-If7hRJb0kre7Bxp0AdwbBKruAQGhOht2BvbY79U?e=mCDGL5)
 
 ## 주의
