@@ -1,12 +1,12 @@
-# 커뮤니티 페이지 (팀 프로젝트 내 개인 구현)
+# 부산 지역 사용자 중심 러닝 커뮤니티 프로젝트 (4인 팀 프로젝트)
 
 ## 사용 기술
-- Spring Boot, MySQL, HTML
+- Spring Boot 3, JPA, Thymeleaf, Bootstrap5, MySQL
 
-## 내 역할
+## 담당 역할
 - 백엔드 CRUD API 설계 및 구현
 - DB 테이블 설계
-- 관련 HTML 파일 구현
+- HTML/CSS 기반 커뮤니티 페이지 구현
 
 ## 구현 기능
 - 후기, 댓글, 좋아요, 북마크 CRUD
